@@ -5,6 +5,21 @@ activities and GMs configure kingdom state without enforced phase order. The
 system models Paizo's kingdom rules as persistent game state rather than an
 automated turn engine.
 
+<p align="center">
+  <a href="https://github.com/DavidMiserak/pf2e-kingdom-manager/actions/workflows/test.yml">
+    <img src="https://github.com/DavidMiserak/pf2e-kingdom-manager/actions/workflows/test.yml/badge.svg" alt="Tests" />
+  </a>
+  <a href="https://codecov.io/gh/DavidMiserak/pf2e-kingdom-manager">
+    <img src="https://codecov.io/gh/DavidMiserak/pf2e-kingdom-manager/branch/main/graph/badge.svg" alt="codecov" />
+  </a>
+  <img src="https://img.shields.io/badge/python-3.13+-blue.svg" alt="Python 3.13+" />
+  <img src="https://img.shields.io/badge/django-6.0-green.svg" alt="Django 6.0" />
+  <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black" />
+  <a href="https://github.com/pre-commit/pre-commit">
+    <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit" alt="pre-commit" />
+  </a>
+</p>
+
 ## Features
 
 - Kingdom statistics tracking (ability scores, skills, ruin, unrest, XP/level)

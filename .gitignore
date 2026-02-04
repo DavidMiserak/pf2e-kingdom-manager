@@ -49,3 +49,7 @@ temp/
 *.tmp
 *.temp
 CLAUDE.md
+*~
+*.sqlite
+*.sqlite3
+staticfiles/
