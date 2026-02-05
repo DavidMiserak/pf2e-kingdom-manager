@@ -1,0 +1,38 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+{% if object %}Edit {{ object.name }}{% else %}New Kingdom{% endif %} - PF2E Kingdom Manager
+{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title mb-4">
+                    {% if object %}
+                    Edit {{ object.name }}
+                    {% else %}
+                    Create New Kingdom
+                    {% endif %}
+                </h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            {% if object %}Save Changes{% else %}Create Kingdom{% endif %}
+                        </button>
+                        {% if object %}
+                        <a href="{% url 'kingdoms:kingdom_detail' object.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        {% else %}
+                        <a href="{% url 'kingdoms:kingdom_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

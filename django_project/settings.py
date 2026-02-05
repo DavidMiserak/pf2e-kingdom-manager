@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "allauth.account",
     # Local
     "accounts",
+    "kingdoms",
     "pages",
 ]
 
