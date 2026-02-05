@@ -35,6 +35,7 @@ automated turn engine.
 - Python 3.13+
 - PostgreSQL 14+
 - Podman (or Docker)
+- Bootstrap 5 (for frontend styling)
 
 ## Quick Start
 
