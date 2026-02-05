@@ -9,6 +9,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.views.generic.base import TemplateView
 
 from .forms import (
+    CharacterNameForm,
     KingdomCreateForm,
     KingdomUpdateForm,
     LeadershipFormSet,
@@ -75,6 +76,7 @@ class KingdomDetailView(KingdomAccessMixin, DetailView):
                 if SKILL_KEY_ABILITY.get(s.skill) == ability
             ]
         context["skills_by_ability"] = skills_by_ability
+        context["character_name_form"] = CharacterNameForm(instance=self.membership)
         return context
 
 
@@ -103,7 +105,8 @@ class LeadershipUpdateView(GMRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["formset"] = LeadershipFormSet(
-            queryset=self.kingdom.leadership_assignments.all()
+            queryset=self.kingdom.leadership_assignments.all(),
+            kingdom=self.kingdom,
         )
         return context
 
@@ -111,6 +114,7 @@ class LeadershipUpdateView(GMRequiredMixin, TemplateView):
         formset = LeadershipFormSet(
             request.POST,
             queryset=self.kingdom.leadership_assignments.all(),
+            kingdom=self.kingdom,
         )
         if formset.is_valid():
             formset.save()
@@ -186,6 +190,17 @@ class KingdomMemberManageView(GMRequiredMixin, TemplateView):
                 "kingdoms:member_manage",
                 kwargs={"pk": self.kingdom.pk},
             )
+        )
+
+
+class UpdateCharacterNameView(KingdomAccessMixin, View):
+    def post(self, request, *args, **kwargs):
+        form = CharacterNameForm(request.POST, instance=self.membership)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Character name updated.")
+        return redirect(
+            reverse("kingdoms:kingdom_detail", kwargs={"pk": self.kingdom.pk})
         )
 
 

@@ -11,6 +11,7 @@ from .views import (
     LeadershipUpdateView,
     RegenerateInviteView,
     SkillsUpdateView,
+    UpdateCharacterNameView,
 )
 
 app_name = "kingdoms"
@@ -24,6 +25,11 @@ urlpatterns = [
     ),
     path("<int:pk>/", KingdomDetailView.as_view(), name="kingdom_detail"),
     path("<int:pk>/edit/", KingdomUpdateView.as_view(), name="kingdom_update"),
+    path(
+        "<int:pk>/character-name/",
+        UpdateCharacterNameView.as_view(),
+        name="update_character_name",
+    ),
     path(
         "<int:pk>/delete/",
         KingdomDeleteView.as_view(),

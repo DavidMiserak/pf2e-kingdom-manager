@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Leadership - {{ kingdom.name }} - PF2E Kingdom Manager{% endblock title %}
 
@@ -13,34 +14,21 @@
 <form method="post">
     {% csrf_token %}
     {{ formset.management_form }}
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th>Role</th>
-                    <th>Character Name</th>
-                    <th>PC</th>
-                    <th>Invested</th>
-                    <th>Vacant</th>
-                    <th>Downtime</th>
-                    <th>Player Account</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for form in formset %}
-                <tr>
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+        {% for form in formset %}
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ form.instance.get_role_display }}</h5>
+                    <small class="text-muted">Key Ability: {{ form.instance.get_key_ability_display }}</small>
+                </div>
+                <div class="card-body">
                     {{ form.id }}
-                    <td><strong>{{ form.instance.get_role_display }}</strong></td>
-                    <td>{{ form.character_name }}</td>
-                    <td class="text-center">{{ form.is_pc }}</td>
-                    <td class="text-center">{{ form.is_invested }}</td>
-                    <td class="text-center">{{ form.is_vacant }}</td>
-                    <td class="text-center">{{ form.downtime_fulfilled }}</td>
-                    <td>{{ form.user }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {{ form|crispy }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
     <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">Save Changes</button>

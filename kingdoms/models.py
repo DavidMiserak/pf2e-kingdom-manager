@@ -362,6 +362,7 @@ class KingdomMembership(models.Model):
         related_name="kingdom_memberships",
     )
     role = models.CharField(max_length=6, choices=MembershipRole)
+    character_name = models.CharField(max_length=100, default="Bilbo")
 
     class Meta:
         unique_together = [("user", "kingdom")]

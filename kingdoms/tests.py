@@ -688,6 +688,48 @@ class KingdomDeleteViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertTrue(Kingdom.objects.filter(pk=self.kingdom.pk).exists())
 
-    def test_anonymous_redirect(self):
+    def test_anonymous_redirect_delete(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
+
+
+class UpdateCharacterNameViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="player",
+            email="player@example.com",
+            password="testpass123",  # nosec B106
+        )
+        self.outsider = User.objects.create_user(
+            username="outsider",
+            email="outsider@example.com",
+            password="testpass123",  # nosec B106
+        )
+        self.kingdom = Kingdom.objects.create(name="Test Kingdom")
+        self.membership = KingdomMembership.objects.create(
+            user=self.user,
+            kingdom=self.kingdom,
+            role=MembershipRole.PLAYER,
+        )
+        self.url = reverse(
+            "kingdoms:update_character_name",
+            kwargs={"pk": self.kingdom.pk},
+        )
+
+    def test_member_can_update_name(self):
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, {"character_name": "Gandalf"})
+        self.assertRedirects(
+            response,
+            reverse("kingdoms:kingdom_detail", kwargs={"pk": self.kingdom.pk}),
+        )
+        self.membership.refresh_from_db()
+        self.assertEqual(self.membership.character_name, "Gandalf")
+
+    def test_default_character_name(self):
+        self.assertEqual(self.membership.character_name, "Bilbo")
+
+    def test_non_member_gets_404(self):
+        self.client.force_login(self.outsider)
+        response = self.client.post(self.url, {"character_name": "Sauron"})
+        self.assertEqual(response.status_code, 404)

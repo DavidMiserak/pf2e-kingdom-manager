@@ -20,6 +20,24 @@
     {% endif %}
 </div>
 
+<!-- Character Name -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="post" action="{% url 'kingdoms:update_character_name' kingdom.pk %}" class="row align-items-end g-2">
+            {% csrf_token %}
+            <div class="col-auto">
+                <label for="id_character_name" class="form-label mb-0"><strong>Your Character</strong></label>
+            </div>
+            <div class="col-sm-4">
+                <input type="text" name="character_name" value="{{ membership.character_name }}" class="form-control form-control-sm" id="id_character_name" maxlength="100" required>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Level / XP / Core Stats -->
 <div class="row g-3 mb-4">
     <div class="col-md-3">

@@ -39,6 +39,7 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
+                        <th>Character</th>
                         <th>Email</th>
                         <th>Role</th>
                         <th></th>
@@ -47,6 +48,7 @@
                 <tbody>
                     {% for m in memberships %}
                     <tr>
+                        <td>{{ m.character_name }}</td>
                         <td>{{ m.user.email }}</td>
                         <td>
                             {% if m.role == "gm" %}
