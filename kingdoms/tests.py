@@ -334,14 +334,14 @@ class KingdomDetailViewTests(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Kingdom")
-        self.assertContains(response, "Edit Stats")
+        self.assertContains(response, "fa-pen")  # Edit button icon
 
     def test_player_can_view(self):
         self.client.force_login(self.player)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Kingdom")
-        self.assertNotContains(response, "Edit Stats")
+        self.assertNotContains(response, "btn-outline-danger")  # No delete button
 
     def test_non_member_gets_404(self):
         self.client.force_login(self.outsider)

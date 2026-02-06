@@ -304,6 +304,10 @@ class LeadershipAssignment(models.Model):
     def key_ability(self):
         return ROLE_KEY_ABILITY.get(self.role)
 
+    def get_key_ability_display(self):
+        ability = self.key_ability
+        return ability.label if ability else ""
+
     @property
     def status_bonus(self):
         """Investment status bonus based on kingdom level."""
@@ -315,6 +319,15 @@ class LeadershipAssignment(models.Model):
         if level >= 8:
             return 2
         return 1
+
+    @property
+    def display_name(self):
+        """Character name for display: PC membership name or NPC character_name."""
+        if self.is_pc and self.user:
+            membership = self.kingdom.kingdom_memberships.filter(user=self.user).first()
+            if membership:
+                return membership.character_name
+        return self.character_name
 
 
 class KingdomSkillProficiency(models.Model):
