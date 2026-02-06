@@ -6,6 +6,22 @@ The PF2E Kingdom Manager has completed Phase 1-2 implementation with 129 tests a
 
 This refactoring focuses on **high-impact, low-risk improvements** that reduce duplication, improve performance, and maintain code quality without introducing breaking changes. More invasive changes (like ruin/commodity normalization via JSONField) are intentionally deferred until Phase 3 (territory management) is complete.
 
+## Status Summary
+
+**Overall Progress**: 50% complete (3 of 6 items done)
+
+- ✅ **Phase 1 (High Impact, Low Risk)**: 66% complete (2 of 3 items)
+    - ✅ 1.1 Database indexes - COMPLETE
+    - ✅ 1.2 Size calculation caching - COMPLETE
+    - ⏸️ 1.3 Template includes - DEFERRED (higher complexity than anticipated)
+
+- ✅ **Phase 2 (Code Quality)**: 33% complete (1 of 3 items)
+    - ✅ 2.1 URL helper utility - PARTIALLY COMPLETE (foundation created, 6/16 reverse() calls updated)
+    - ⏸️ 2.2 Choice generator consolidation - NOT STARTED
+    - ⏸️ 2.3 Formset mixin - NOT STARTED
+
+**Test Coverage**: 133 tests, 97% coverage maintained ✅
+
 ---
 
 ## Refactoring Goals
@@ -326,14 +342,37 @@ The following opportunities were identified but are intentionally deferred:
 
 ---
 
-## Implementation Order
+## Implementation Status
+
+### ✅ Completed
 
 1. **Add database indexes** (1.1) - CRITICAL performance optimization
-2. **Cache size calculation** (1.2) - Quick win, 5 minutes
-3. **Extract template includes** (1.3) - UI consistency
-4. **URL helper utility** (2.1) - Foundation for other changes
-5. **Choice generator consolidation** (2.2) - Forms cleanup
-6. **Formset mixin** (2.3) - View simplification
+    - Indexes on `KingdomMembership(kingdom, user)`, `KingdomTurn(kingdom, -turn_number)`, `KingdomTurn(kingdom, completed_at)`, `ActivityLog(turn, -created_at)`
+    - Migration 0011 applied
+    - Commit: 98bac2b
+
+2. **Cache size calculation** (1.2) - Quick win
+    - `_size_info()` now uses `@cached_property`
+    - Updated 3 properties to use property access instead of method calls
+    - Commit: 98bac2b
+
+3. **URL helper utility** (2.1) - Partially complete
+    - Created `kingdoms/url_helpers.py` with `kingdom_url()` and `turn_url()` functions
+    - Updated 6 key view methods (`KingdomCreateView`, `KingdomUpdateView`, `UpdateCharacterNameView`, `TurnCreateView`, `TurnUpdateView`, `ActivityCreateView`)
+    - ~10 additional `reverse()` calls remain (lower priority)
+    - Commit: 98bac2b
+
+### ⏸️ Deferred / Not Started
+
+1. **Extract template includes** (1.3) - UI consistency
+    - Deferred: Template variations are more complex than anticipated; higher risk of breaking existing styling
+    - Can be revisited after Phase 3 (territory) is complete
+
+2. **Choice generator consolidation** (2.2) - Forms cleanup
+    - Not started: Low priority, working pattern can be extracted later
+
+3. **Formset mixin** (2.3) - View simplification
+    - Not started: Current implementation works well; can be extracted when more formset views are added
 
 ---
 
