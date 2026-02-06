@@ -625,6 +625,10 @@ class KingdomTurn(models.Model):
     improved_lifestyle = models.BooleanField(default=False)
     tapped_treasury = models.BooleanField(default=False)
 
+    # Event phase tracking
+    event_occurred = models.BooleanField(default=False)
+    event_xp = models.PositiveIntegerField(default=0)
+
     # End-of-turn results
     ending_rp = models.PositiveIntegerField(null=True, blank=True)
     rp_converted_to_xp = models.PositiveIntegerField(null=True, blank=True)

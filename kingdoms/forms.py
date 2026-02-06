@@ -220,6 +220,8 @@ class TurnUpdateForm(forms.ModelForm):
             "collected_taxes",
             "improved_lifestyle",
             "tapped_treasury",
+            "event_occurred",
+            "event_xp",
             "ending_rp",
             "rp_converted_to_xp",
             "xp_gained",

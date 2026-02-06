@@ -1110,8 +1110,15 @@ class TurnUpdateViewTests(TestCase):
             {
                 "in_game_month": "gozran",
                 "starting_rp": 50,
+                "resource_dice_rolled": "",
                 "collected_taxes": True,
+                "improved_lifestyle": False,
+                "tapped_treasury": False,
+                "event_occurred": False,
+                "event_xp": 0,
                 "xp_gained": 20,
+                "leveled_up": False,
+                "notes": "",
             },
         )
         self.turn.refresh_from_db()
