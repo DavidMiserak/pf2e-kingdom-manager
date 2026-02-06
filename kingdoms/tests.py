@@ -399,6 +399,7 @@ class KingdomUpdateViewTests(TestCase):
             "level": 3,
             "xp": 500,
             "unrest": 2,
+            "claimed_hexes": 5,
             "fame_points": 1,
             "fame_type": "fame",
             "resource_points": 50,

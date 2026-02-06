@@ -182,6 +182,9 @@ class Kingdom(models.Model):
     decay_threshold = models.PositiveSmallIntegerField(default=10)
     decay_penalty = models.PositiveSmallIntegerField(default=0)
 
+    # Size (manual until Phase 3 hex tracking)
+    claimed_hexes = models.PositiveSmallIntegerField(default=0)
+
     # Commodity stockpiles
     food = models.PositiveIntegerField(default=0)
     lumber = models.PositiveIntegerField(default=0)
@@ -229,10 +232,8 @@ class Kingdom(models.Model):
 
     @property
     def hex_count(self):
-        """Number of claimed hexes. Returns 0 until hex model exists."""
-        if hasattr(self, "hex_set"):
-            return self.hex_set.filter(status="claimed").count()
-        return 0
+        """Number of claimed hexes. Uses manual field until Phase 3 hex model."""
+        return self.claimed_hexes
 
     def _size_info(self):
         count = self.hex_count

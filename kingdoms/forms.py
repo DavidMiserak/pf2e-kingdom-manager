@@ -33,6 +33,7 @@ class KingdomUpdateForm(forms.ModelForm):
             "level",
             "xp",
             "unrest",
+            "claimed_hexes",
             "fame_points",
             "fame_type",
             "resource_points",
