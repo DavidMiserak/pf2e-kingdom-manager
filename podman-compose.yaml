@@ -3,7 +3,7 @@ version: "3.9"
 
 services:
     web:
-        image: localhost/pf2e-kingdom-manager:latest
+        image: localhost/pf2e-km:latest
         command: python /code/manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/code

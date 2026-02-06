@@ -12,7 +12,7 @@ pre-commit-setup:
 
 .PHONY: image-build
 image-build: Containerfile
-	$(RUNTIME) build -t pf2e-kingdom-manager -f Containerfile .
+	$(RUNTIME) build -t pf2e-km -f Containerfile .
 
 .PHONY: stop
 stop:
