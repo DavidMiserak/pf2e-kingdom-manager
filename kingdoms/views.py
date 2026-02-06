@@ -30,6 +30,7 @@ from .models import (
     KingdomTurn,
     MembershipRole,
 )
+from .url_helpers import kingdom_url, turn_url
 
 
 class KingdomListView(LoginRequiredMixin, ListView):
@@ -57,7 +58,7 @@ class KingdomCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("kingdoms:kingdom_detail", kwargs={"pk": self.object.pk})
+        return kingdom_url("kingdom_detail", self.object.pk)
 
 
 class KingdomDetailView(KingdomAccessMixin, DetailView):
@@ -107,7 +108,7 @@ class KingdomUpdateView(GMRequiredMixin, UpdateView):
     template_name = "kingdoms/kingdom_update.html"
 
     def get_success_url(self):
-        return reverse("kingdoms:kingdom_detail", kwargs={"pk": self.object.pk})
+        return kingdom_url("kingdom_detail", self.object.pk)
 
 
 class KingdomDeleteView(GMRequiredMixin, TemplateView):
@@ -223,9 +224,7 @@ class UpdateCharacterNameView(KingdomAccessMixin, View):
         if form.is_valid():
             form.save()
             messages.success(request, "Character name updated.")
-        return redirect(
-            reverse("kingdoms:kingdom_detail", kwargs={"pk": self.kingdom.pk})
-        )
+        return redirect(kingdom_url("kingdom_detail", self.kingdom.pk))
 
 
 class JoinKingdomView(LoginRequiredMixin, View):
@@ -240,7 +239,7 @@ class JoinKingdomView(LoginRequiredMixin, View):
             messages.success(request, f"You joined {kingdom.name}!")
         else:
             messages.info(request, f"You are already a member of {kingdom.name}.")
-        return redirect(reverse("kingdoms:kingdom_detail", kwargs={"pk": kingdom.pk}))
+        return redirect(kingdom_url("kingdom_detail", kingdom.pk))
 
 
 class RegenerateInviteView(GMRequiredMixin, View):
@@ -271,10 +270,7 @@ class TurnCreateView(GMRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "kingdoms:turn_detail",
-            kwargs={"pk": self.kingdom.pk, "turn_pk": self.object.pk},
-        )
+        return turn_url("turn_detail", self.kingdom.pk, self.object.pk)
 
 
 class TurnDetailView(KingdomAccessMixin, DetailView):
@@ -307,10 +303,7 @@ class TurnUpdateView(GMRequiredMixin, UpdateView):
         return KingdomTurn.objects.filter(kingdom_id=self.kwargs["pk"])
 
     def get_success_url(self):
-        return reverse(
-            "kingdoms:turn_detail",
-            kwargs={"pk": self.kingdom.pk, "turn_pk": self.object.pk},
-        )
+        return turn_url("turn_detail", self.kingdom.pk, self.object.pk)
 
 
 class TurnDeleteView(GMRequiredMixin, TemplateView):
@@ -330,9 +323,7 @@ class TurnDeleteView(GMRequiredMixin, TemplateView):
         turn_number = turn.turn_number
         turn.delete()
         messages.success(request, f"Turn {turn_number} has been deleted.")
-        return redirect(
-            reverse("kingdoms:kingdom_detail", kwargs={"pk": self.kingdom.pk})
-        )
+        return redirect(kingdom_url("kingdom_detail", self.kingdom.pk))
 
 
 class TurnCompleteView(GMRequiredMixin, View):
@@ -402,10 +393,7 @@ class ActivityCreateView(KingdomAccessMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "kingdoms:turn_detail",
-            kwargs={"pk": self.kingdom.pk, "turn_pk": self.turn.pk},
-        )
+        return turn_url("turn_detail", self.kingdom.pk, self.turn.pk)
 
 
 class ActivityUpdateView(KingdomAccessMixin, UpdateView):

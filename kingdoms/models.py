@@ -1,4 +1,5 @@
 import uuid
+from functools import cached_property
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -429,6 +430,7 @@ class Kingdom(models.Model):
         """Number of claimed hexes. Uses manual field until Phase 3 hex model."""
         return self.claimed_hexes
 
+    @cached_property
     def _size_info(self):
         count = self.hex_count
         for max_hexes, label, storage, die in SIZE_CATEGORIES:
@@ -438,15 +440,15 @@ class Kingdom(models.Model):
 
     @property
     def size_category(self):
-        return self._size_info()[0]
+        return self._size_info[0]
 
     @property
     def commodity_storage_limit(self):
-        return self._size_info()[1]
+        return self._size_info[1]
 
     @property
     def resource_die_type(self):
-        return self._size_info()[2]
+        return self._size_info[2]
 
     @property
     def size_modifier(self):
@@ -592,6 +594,9 @@ class KingdomMembership(models.Model):
 
     class Meta:
         unique_together = [("user", "kingdom")]
+        indexes = [
+            models.Index(fields=["kingdom", "user"]),
+        ]
 
     def __str__(self):
         return f"{self.user} - {self.kingdom} ({self.get_role_display()})"
@@ -642,6 +647,10 @@ class KingdomTurn(models.Model):
     class Meta:
         unique_together = [("kingdom", "turn_number")]
         ordering = ["-turn_number"]
+        indexes = [
+            models.Index(fields=["kingdom", "-turn_number"]),
+            models.Index(fields=["kingdom", "completed_at"]),
+        ]
 
     def __str__(self):
         return f"Turn {self.turn_number}"
@@ -710,6 +719,9 @@ class ActivityLog(models.Model):
         ordering = ["-created_at"]
         verbose_name = "activity log"
         verbose_name_plural = "activity logs"
+        indexes = [
+            models.Index(fields=["turn", "-created_at"]),
+        ]
 
     def __str__(self):
         return self.activity_name
