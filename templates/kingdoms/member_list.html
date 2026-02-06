@@ -92,7 +92,27 @@
 <script>
 function copyInviteLink() {
     var input = document.getElementById("invite-url");
-    navigator.clipboard.writeText(input.value);
+    var btn = event.currentTarget;
+    var originalHtml = btn.innerHTML;
+
+    navigator.clipboard.writeText(input.value).then(function() {
+        btn.innerHTML = '<i class="fa-solid fa-check me-1"></i>Copied!';
+        btn.classList.remove('btn-warning');
+        btn.classList.add('btn-success');
+        setTimeout(function() {
+            btn.innerHTML = originalHtml;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-warning');
+        }, 2000);
+    }).catch(function() {
+        // Fallback: select the text for manual copy
+        input.select();
+        input.setSelectionRange(0, 99999);
+        btn.innerHTML = '<i class="fa-solid fa-exclamation-triangle me-1"></i>Select & copy manually';
+        setTimeout(function() {
+            btn.innerHTML = originalHtml;
+        }, 3000);
+    });
 }
 </script>
 {% endblock content %}
