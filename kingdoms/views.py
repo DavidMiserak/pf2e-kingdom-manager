@@ -96,7 +96,7 @@ class KingdomDetailView(KingdomAccessMixin, DetailView):
 class KingdomUpdateView(GMRequiredMixin, UpdateView):
     model = Kingdom
     form_class = KingdomUpdateForm
-    template_name = "kingdoms/kingdom_form.html"
+    template_name = "kingdoms/kingdom_update.html"
 
     def get_success_url(self):
         return reverse("kingdoms:kingdom_detail", kwargs={"pk": self.object.pk})

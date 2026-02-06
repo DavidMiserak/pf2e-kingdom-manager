@@ -127,6 +127,18 @@ class Charter(models.TextChoices):
     OPEN = "open", "Open"
 
 
+CHARTER_EFFECTS = {
+    Charter.CONQUEST: {"boost": AbilityScore.LOYALTY, "flaw": AbilityScore.CULTURE},
+    Charter.EXPANSION: {"boost": AbilityScore.CULTURE, "flaw": AbilityScore.STABILITY},
+    Charter.EXPLORATION: {
+        "boost": AbilityScore.STABILITY,
+        "flaw": AbilityScore.ECONOMY,
+    },
+    Charter.GRANT: {"boost": AbilityScore.ECONOMY, "flaw": AbilityScore.LOYALTY},
+    Charter.OPEN: {"boost": None, "flaw": None},
+}
+
+
 class Government(models.TextChoices):
     DESPOTISM = "despotism", "Despotism"
     FEUDALISM = "feudalism", "Feudalism"
@@ -235,6 +247,18 @@ class Kingdom(models.Model):
         return self.name
 
     # --- Computed properties ---
+
+    @property
+    def charter_boost(self):
+        if self.charter:
+            return CHARTER_EFFECTS[self.charter]["boost"]
+        return None
+
+    @property
+    def charter_flaw(self):
+        if self.charter:
+            return CHARTER_EFFECTS[self.charter]["flaw"]
+        return None
 
     @staticmethod
     def _ability_modifier(score):

@@ -13,27 +13,77 @@
 </div>
 
 {% if kingdoms %}
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+<div class="row row-cols-1 row-cols-lg-2 g-4">
     {% for kingdom in kingdoms %}
     <div class="col">
-        <div class="card h-100 border-0 shadow">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between mb-2">
-                    <h4 class="card-title mb-0">
-                        <i class="fa-solid fa-crown me-2 text-warning"></i>{{ kingdom.name }}
-                    </h4>
-                    <span class="badge bg-secondary">Lvl {{ kingdom.level }}</span>
+        <a href="{% url 'kingdoms:kingdom_detail' kingdom.pk %}" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body pb-2">
+                    <!-- Name + Level -->
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <h4 class="card-title mb-0 text-body">
+                            <i class="fa-solid fa-crown me-2 text-warning"></i>{{ kingdom.name }}
+                        </h4>
+                        <span class="badge bg-warning text-dark fs-6">Lvl {{ kingdom.level }}</span>
+                    </div>
+                    <!-- Charter / Government / Size -->
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-body-tertiary text-body-secondary">
+                            <i class="fa-solid fa-mountain-sun me-1"></i>{{ kingdom.size_category }} &middot; {{ kingdom.claimed_hexes }} hex{{ kingdom.claimed_hexes|pluralize:"es" }}
+                        </span>
+                        {% if kingdom.charter %}
+                        <span class="badge bg-body-tertiary text-body-secondary">
+                            <i class="fa-solid fa-scroll me-1"></i>{{ kingdom.get_charter_display }}
+                        </span>
+                        {% endif %}
+                        {% if kingdom.government %}
+                        <span class="badge bg-body-tertiary text-body-secondary">
+                            <i class="fa-solid fa-landmark me-1"></i>{{ kingdom.get_government_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <!-- Ability Scores Row -->
+                    <div class="row g-2 text-center mb-2">
+                        <div class="col-3">
+                            <div class="rounded bg-body-tertiary py-1">
+                                <div class="text-uppercase small text-body-secondary" style="font-size: .65rem;">Culture</div>
+                                <div class="fw-bold">{{ kingdom.culture_score }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="rounded bg-body-tertiary py-1">
+                                <div class="text-uppercase small text-body-secondary" style="font-size: .65rem;">Economy</div>
+                                <div class="fw-bold">{{ kingdom.economy_score }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="rounded bg-body-tertiary py-1">
+                                <div class="text-uppercase small text-body-secondary" style="font-size: .65rem;">Loyalty</div>
+                                <div class="fw-bold">{{ kingdom.loyalty_score }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="rounded bg-body-tertiary py-1">
+                                <div class="text-uppercase small text-body-secondary" style="font-size: .65rem;">Stability</div>
+                                <div class="fw-bold">{{ kingdom.stability_score }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p class="card-text text-body-secondary mb-0">
-                    <i class="fa-solid fa-mountain-sun me-1 opacity-50"></i>{{ kingdom.size_category }}
-                </p>
+                <!-- Footer stats -->
+                <div class="card-footer bg-transparent border-top small text-body-secondary d-flex justify-content-between">
+                    <span><i class="fa-solid fa-coins me-1 text-warning opacity-75"></i>{{ kingdom.resource_points }} RP</span>
+                    <span>
+                        {% if kingdom.unrest %}
+                        <i class="fa-solid fa-person-burst me-1 text-danger opacity-75"></i>Unrest {{ kingdom.unrest }}
+                        {% else %}
+                        <i class="fa-solid fa-face-smile me-1 text-success opacity-75"></i>No Unrest
+                        {% endif %}
+                    </span>
+                    <span><i class="fa-solid fa-star me-1 text-warning opacity-75"></i>{{ kingdom.get_fame_type_display }} {{ kingdom.fame_points }}</span>
+                </div>
             </div>
-            <div class="card-footer bg-transparent border-top-0 pt-0">
-                <a href="{% url 'kingdoms:kingdom_detail' kingdom.pk %}" class="btn btn-outline-warning w-100">
-                    <i class="fa-solid fa-compass me-1"></i>View Dashboard
-                </a>
-            </div>
-        </div>
+        </a>
     </div>
     {% endfor %}
 </div>
