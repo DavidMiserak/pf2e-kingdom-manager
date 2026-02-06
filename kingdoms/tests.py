@@ -1073,6 +1073,23 @@ class TurnDetailViewTests(TestCase):
         self.assertContains(response, "Log Activity")
         self.assertNotContains(response, "Complete Turn")
 
+    def test_event_phase_displays_when_event_occurred(self):
+        self.turn.event_occurred = True
+        self.turn.event_xp = 30
+        self.turn.save()
+
+        self.client.force_login(self.gm)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Event Phase")
+        self.assertContains(response, "Random Event Occurred")
+        self.assertContains(response, "Event XP: 30")
+
+    def test_event_phase_hidden_when_no_event(self):
+        # Turn with event_occurred=False and event_xp=0 shouldn't show Event Phase
+        self.client.force_login(self.gm)
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Event Phase")
+
 
 class TurnUpdateViewTests(TestCase):
     def setUp(self):
@@ -1126,6 +1143,56 @@ class TurnUpdateViewTests(TestCase):
         self.assertEqual(self.turn.starting_rp, 50)
         self.assertTrue(self.turn.collected_taxes)
         self.assertEqual(self.turn.xp_gained, 20)
+
+    def test_gm_can_set_event_occurred(self):
+        self.client.force_login(self.gm)
+        response = self.client.post(
+            self.url,
+            {
+                "in_game_month": "gozran",
+                "starting_rp": 50,
+                "resource_dice_rolled": "",
+                "collected_taxes": False,
+                "improved_lifestyle": False,
+                "tapped_treasury": False,
+                "event_occurred": True,
+                "event_xp": 30,
+                "xp_gained": 50,
+                "leveled_up": False,
+                "notes": "Random event occurred",
+            },
+        )
+        self.turn.refresh_from_db()
+        self.assertTrue(self.turn.event_occurred)
+        self.assertEqual(self.turn.event_xp, 30)
+        self.assertEqual(self.turn.xp_gained, 50)
+
+    def test_gm_can_clear_event(self):
+        # Verify event fields can be cleared/set to defaults
+        self.turn.event_occurred = True
+        self.turn.event_xp = 30
+        self.turn.save()
+
+        self.client.force_login(self.gm)
+        response = self.client.post(
+            self.url,
+            {
+                "in_game_month": "gozran",
+                "starting_rp": 50,
+                "resource_dice_rolled": "",
+                "collected_taxes": False,
+                "improved_lifestyle": False,
+                "tapped_treasury": False,
+                "event_occurred": False,
+                "event_xp": 0,
+                "xp_gained": 0,
+                "leveled_up": False,
+                "notes": "",
+            },
+        )
+        self.turn.refresh_from_db()
+        self.assertFalse(self.turn.event_occurred)
+        self.assertEqual(self.turn.event_xp, 0)
 
     def test_player_gets_404(self):
         self.client.force_login(self.player)
