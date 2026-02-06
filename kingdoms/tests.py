@@ -280,7 +280,13 @@ class KingdomCreateViewTests(TestCase):
     def test_create_kingdom(self):
         self.client.force_login(self.user)
         response = self.client.post(
-            self.url, {"name": "New Kingdom", "fame_type": "fame"}
+            self.url,
+            {
+                "name": "New Kingdom",
+                "charter": "exploration",
+                "government": "republic",
+                "fame_type": "fame",
+            },
         )
         kingdom = Kingdom.objects.get(name="New Kingdom")
         self.assertRedirects(
@@ -392,6 +398,8 @@ class KingdomUpdateViewTests(TestCase):
         self.client.force_login(self.gm)
         data = {
             "name": "Updated Kingdom",
+            "charter": "grant",
+            "government": "feudalism",
             "culture_score": 14,
             "economy_score": 12,
             "loyalty_score": 10,

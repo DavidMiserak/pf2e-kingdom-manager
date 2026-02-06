@@ -5,9 +5,16 @@
 {% block content %}
 <!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-    <h1 class="mb-0">
-        <i class="fa-solid fa-crown me-2 text-warning"></i>{{ kingdom.name }}
-    </h1>
+    <div>
+        <h1 class="mb-0">
+            <i class="fa-solid fa-crown me-2 text-warning"></i>{{ kingdom.name }}
+        </h1>
+        {% if kingdom.charter or kingdom.government %}
+        <div class="text-body-secondary small ms-5 ps-2">
+            {% if kingdom.get_charter_display %}{{ kingdom.get_charter_display }} Charter{% endif %}{% if kingdom.charter and kingdom.government %} · {% endif %}{% if kingdom.get_government_display %}{{ kingdom.get_government_display }}{% endif %}
+        </div>
+        {% endif %}
+    </div>
     {% if is_gm %}
     <div class="d-flex gap-2">
         <a href="{% url 'kingdoms:kingdom_update' kingdom.pk %}" class="btn btn-outline-secondary btn-sm">

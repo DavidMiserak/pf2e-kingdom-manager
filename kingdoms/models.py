@@ -119,6 +119,23 @@ class FameInfamyType(models.TextChoices):
     INFAMY = "infamy", "Infamy"
 
 
+class Charter(models.TextChoices):
+    CONQUEST = "conquest", "Conquest"
+    EXPANSION = "expansion", "Expansion"
+    EXPLORATION = "exploration", "Exploration"
+    GRANT = "grant", "Grant"
+    OPEN = "open", "Open"
+
+
+class Government(models.TextChoices):
+    DESPOTISM = "despotism", "Despotism"
+    FEUDALISM = "feudalism", "Feudalism"
+    OLIGARCHY = "oligarchy", "Oligarchy"
+    REPUBLIC = "republic", "Republic"
+    THAUMOCRACY = "thaumocracy", "Thaumocracy"
+    YEOMANRY = "yeomanry", "Yeomanry"
+
+
 # Size category breakpoints: (max_hexes, label, storage_limit, resource_die)
 SIZE_CATEGORIES = [
     (9, "Territory", 4, "d4"),
@@ -132,6 +149,18 @@ SIZE_CATEGORIES = [
 class Kingdom(models.Model):
     name = models.CharField(max_length=100)
     invite_code = models.UUIDField(default=uuid.uuid4, unique=True)
+    charter = models.CharField(
+        max_length=11,
+        choices=Charter,
+        blank=True,
+        default="",
+    )
+    government = models.CharField(
+        max_length=11,
+        choices=Government,
+        blank=True,
+        default="",
+    )
 
     # Ability scores
     culture_score = models.PositiveSmallIntegerField(default=10)

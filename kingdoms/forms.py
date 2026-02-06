@@ -18,7 +18,7 @@ User = get_user_model()
 class KingdomCreateForm(forms.ModelForm):
     class Meta:
         model = Kingdom
-        fields = ["name", "fame_type"]
+        fields = ["name", "charter", "government", "fame_type"]
 
 
 class KingdomUpdateForm(forms.ModelForm):
@@ -26,6 +26,8 @@ class KingdomUpdateForm(forms.ModelForm):
         model = Kingdom
         fields = [
             "name",
+            "charter",
+            "government",
             "culture_score",
             "economy_score",
             "loyalty_score",
