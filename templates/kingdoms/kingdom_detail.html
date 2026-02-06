@@ -9,11 +9,16 @@
         <h1 class="mb-0">
             <i class="fa-solid fa-crown me-2 text-warning"></i>{{ kingdom.name }}
         </h1>
-        {% if kingdom.charter or kingdom.government %}
-        <div class="d-flex flex-wrap align-items-center gap-2 ms-5 ps-2 mt-2">
+        {% if kingdom.charter or kingdom.heartland or kingdom.government %}
+        <div class="d-flex flex-wrap align-items-center gap-2 ms-md-5 ps-md-2 mt-2">
             {% if kingdom.charter %}
             <span class="badge bg-body-tertiary text-body-secondary">
                 <i class="fa-solid fa-scroll me-1"></i>{{ kingdom.get_charter_display }}
+            </span>
+            {% endif %}
+            {% if kingdom.heartland %}
+            <span class="badge bg-body-tertiary text-body-secondary">
+                <i class="fa-solid fa-mountain-sun me-1"></i>{{ kingdom.get_heartland_display }}
             </span>
             {% endif %}
             {% if kingdom.government %}
@@ -21,8 +26,6 @@
                 <i class="fa-solid fa-landmark me-1"></i>{{ kingdom.get_government_display }}
             </span>
             {% endif %}
-            {% if kingdom.charter_boost %}<span class="badge bg-success bg-opacity-25 text-success">+{{ kingdom.charter_boost.label }}</span>{% endif %}
-            {% if kingdom.charter_flaw %}<span class="badge bg-danger bg-opacity-25 text-danger">&minus;{{ kingdom.charter_flaw.label }}</span>{% endif %}
         </div>
         {% endif %}
     </div>
@@ -52,7 +55,7 @@
             <div class="col-auto">
                 <label for="id_character_name" class="col-form-label fw-semibold">Your Character</label>
             </div>
-            <div class="col-sm-4 col-md-3">
+            <div class="col col-sm-4 col-md-3">
                 <input type="text" name="character_name" value="{{ membership.character_name }}" class="form-control form-control-sm" id="id_character_name" maxlength="100" required>
             </div>
             <div class="col-auto">
@@ -62,69 +65,43 @@
     </div>
 </div>
 
-<!-- Top row: Core stats + Resources + Unrest/Fame -->
-<div class="row g-3 mb-4">
-    <!-- Level -->
-    <div class="col-6 col-lg-2">
-        <div class="card text-center border-0 shadow-sm h-100">
-            <div class="card-body py-3">
-                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Level</div>
-                <div class="display-5 fw-bold text-warning">{{ kingdom.level }}</div>
-                <small class="text-body-secondary">{{ kingdom.xp }} XP</small>
+<!-- Stats bar: single card with all key numbers -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-3">
+        <div class="row text-center g-3">
+            <div class="col-4 col-lg-2">
+                <div class="text-uppercase text-body-secondary small fw-semibold">Level</div>
+                <div class="fs-4 fw-bold text-warning">{{ kingdom.level }}</div>
+                <div class="text-body-secondary small">{{ kingdom.xp }} XP</div>
             </div>
-        </div>
-    </div>
-    <!-- Control DC -->
-    <div class="col-6 col-lg-2">
-        <div class="card text-center border-0 shadow-sm h-100">
-            <div class="card-body py-3">
-                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Control DC</div>
-                <div class="display-5 fw-bold">{{ kingdom.control_dc }}</div>
-                <small class="text-body-secondary">{{ kingdom.size_category }}</small>
+            <div class="col-4 col-lg-2">
+                <div class="text-uppercase text-body-secondary small fw-semibold">Control DC</div>
+                <div class="fs-4 fw-bold">{{ kingdom.control_dc }}</div>
+                <div class="text-body-secondary small">{{ kingdom.size_category }}</div>
             </div>
-        </div>
-    </div>
-    <!-- Size -->
-    <div class="col-6 col-lg-2">
-        <div class="card text-center border-0 shadow-sm h-100">
-            <div class="card-body py-3">
-                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Size</div>
-                <div class="h4 fw-bold mb-0">{{ kingdom.claimed_hexes }}</div>
-                <small class="text-body-secondary">hex{{ kingdom.claimed_hexes|pluralize:"es" }}</small>
+            <div class="col-4 col-lg-2">
+                <div class="text-uppercase text-body-secondary small fw-semibold">Size</div>
+                <div class="fs-4 fw-bold">{{ kingdom.claimed_hexes }}</div>
+                <div class="text-body-secondary small">hex{{ kingdom.claimed_hexes|pluralize:"es" }}</div>
             </div>
-        </div>
-    </div>
-    <!-- Resources -->
-    <div class="col-6 col-lg-2">
-        <div class="card text-center border-0 shadow-sm h-100">
-            <div class="card-body py-3">
-                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Resources</div>
-                <div class="h4 fw-bold mb-0">{{ kingdom.resource_points }}</div>
-                <small class="text-body-secondary">{{ kingdom.resource_die_type }} +{{ kingdom.bonus_dice }}/-{{ kingdom.penalty_dice }}</small>
+            <div class="col-4 col-lg-2">
+                <div class="text-uppercase text-body-secondary small fw-semibold">Resources</div>
+                <div class="fs-4 fw-bold">{{ kingdom.resource_points }}</div>
+                <div class="text-body-secondary small">{{ kingdom.resource_die_type }} +{{ kingdom.bonus_dice }}/-{{ kingdom.penalty_dice }}</div>
             </div>
-        </div>
-    </div>
-    <!-- Unrest -->
-    <div class="col-6 col-lg-2">
-        <div class="card text-center border-0 shadow-sm h-100">
-            <div class="card-body py-3">
-                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Unrest</div>
-                <div class="h4 fw-bold mb-0 {% if kingdom.unrest >= 15 %}text-danger{% elif kingdom.unrest >= 5 %}text-warning{% endif %}">{{ kingdom.unrest }}</div>
+            <div class="col-4 col-lg-2">
+                <div class="text-uppercase text-body-secondary small fw-semibold">Unrest</div>
+                <div class="fs-4 fw-bold {% if kingdom.unrest >= 15 %}text-danger{% elif kingdom.unrest >= 5 %}text-warning{% endif %}">{{ kingdom.unrest }}</div>
                 {% if kingdom.unrest_penalty %}
-                <span class="badge bg-danger">{{ kingdom.unrest_penalty }}</span>
+                <div class="text-danger small">{{ kingdom.unrest_penalty }} penalty</div>
                 {% else %}
-                <small class="text-body-secondary">No penalty</small>
+                <div class="text-body-secondary small">No penalty</div>
                 {% endif %}
             </div>
-        </div>
-    </div>
-    <!-- Fame -->
-    <div class="col-6 col-lg-2">
-        <div class="card text-center border-0 shadow-sm h-100">
-            <div class="card-body py-3">
-                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">{{ kingdom.get_fame_type_display }}</div>
-                <div class="h4 fw-bold mb-0">{{ kingdom.fame_points }}</div>
-                <small class="text-body-secondary">points</small>
+            <div class="col-4 col-lg-2">
+                <div class="text-uppercase text-body-secondary small fw-semibold">{{ kingdom.get_fame_type_display }}</div>
+                <div class="fs-4 fw-bold">{{ kingdom.fame_points }}</div>
+                <div class="text-body-secondary small">points</div>
             </div>
         </div>
     </div>
@@ -142,25 +119,38 @@
     {% endif %}
 </div>
 <div class="row g-3 mb-4">
-    {% for ability_label, skills in skills_by_ability.items %}
-    <div class="col-md-6 col-lg-3">
+    {% for ability_label, ability_data in abilities_data.items %}
+    <div class="col-6 col-lg-3">
         <div class="card border-0 shadow-sm">
             <!-- Ability score header -->
             <div class="card-header bg-transparent border-bottom text-center py-3">
                 <div class="text-uppercase small text-body-secondary fw-semibold">{{ ability_label }}</div>
                 {% if ability_label == "Culture" %}
-                <div class="display-6 fw-bold mb-0">{{ kingdom.culture_score }}</div>
+                <div class="fs-2 fw-bold mb-0">{{ kingdom.culture_score }}</div>
                 <span class="badge bg-secondary">{% if kingdom.culture_modifier >= 0 %}+{% endif %}{{ kingdom.culture_modifier }}</span>
                 {% elif ability_label == "Economy" %}
-                <div class="display-6 fw-bold mb-0">{{ kingdom.economy_score }}</div>
+                <div class="fs-2 fw-bold mb-0">{{ kingdom.economy_score }}</div>
                 <span class="badge bg-secondary">{% if kingdom.economy_modifier >= 0 %}+{% endif %}{{ kingdom.economy_modifier }}</span>
                 {% elif ability_label == "Loyalty" %}
-                <div class="display-6 fw-bold mb-0">{{ kingdom.loyalty_score }}</div>
+                <div class="fs-2 fw-bold mb-0">{{ kingdom.loyalty_score }}</div>
                 <span class="badge bg-secondary">{% if kingdom.loyalty_modifier >= 0 %}+{% endif %}{{ kingdom.loyalty_modifier }}</span>
                 {% elif ability_label == "Stability" %}
-                <div class="display-6 fw-bold mb-0">{{ kingdom.stability_score }}</div>
+                <div class="fs-2 fw-bold mb-0">{{ kingdom.stability_score }}</div>
                 <span class="badge bg-secondary">{% if kingdom.stability_modifier >= 0 %}+{% endif %}{{ kingdom.stability_modifier }}</span>
                 {% endif %}
+                <!-- Boost/flaw source pills -->
+                <div class="d-flex flex-wrap justify-content-center gap-1 mt-2">
+                    {% for effect in ability_data.effects %}
+                    {% if effect.type == "boost" %}
+                    <span class="badge bg-success bg-opacity-25 text-success">{{ effect.source }}{% if effect.free %} <span class="fw-normal fst-italic">(free)</span>{% endif %}</span>
+                    {% else %}
+                    <span class="badge bg-danger bg-opacity-25 text-danger">{{ effect.source }}</span>
+                    {% endif %}
+                    {% endfor %}
+                    {% if not ability_data.effects %}
+                    <span class="badge invisible">placeholder</span>
+                    {% endif %}
+                </div>
             </div>
             <!-- Ruin for this ability -->
             <div class="card-body py-2 border-bottom">
@@ -182,9 +172,12 @@
             </div>
             <!-- Skills for this ability -->
             <ul class="list-group list-group-flush">
-                {% for skill in skills %}
+                {% for skill in ability_data.skills %}
                 <li class="list-group-item d-flex justify-content-between align-items-center py-2 border-0">
-                    <span class="small">{{ skill.get_skill_display }}</span>
+                    <span class="small">
+                        {{ skill.get_skill_display }}
+                        {% if skill.government_boosted %}<i class="fa-solid fa-landmark ms-1 text-warning opacity-75" title="Government skill"></i>{% endif %}
+                    </span>
                     <span>
                         {% if skill.proficiency != "untrained" %}
                         <span class="badge bg-secondary me-1">{{ skill.get_proficiency_display|slice:":1" }}</span>
@@ -214,35 +207,35 @@
             </div>
             <div class="card-body pt-2">
                 <div class="row text-center g-2">
-                    <div class="col">
+                    <div class="col-4 col-sm">
                         <div class="p-2 rounded bg-body-tertiary">
                             <i class="fa-solid fa-wheat-awn text-success mb-1"></i>
                             <div class="small text-body-secondary">Food</div>
                             <div class="fs-5 fw-bold">{{ kingdom.food }}</div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-4 col-sm">
                         <div class="p-2 rounded bg-body-tertiary">
                             <i class="fa-solid fa-tree text-success mb-1"></i>
                             <div class="small text-body-secondary">Lumber</div>
                             <div class="fs-5 fw-bold">{{ kingdom.lumber }}</div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-4 col-sm">
                         <div class="p-2 rounded bg-body-tertiary">
                             <i class="fa-solid fa-gem text-info mb-1"></i>
                             <div class="small text-body-secondary">Ore</div>
                             <div class="fs-5 fw-bold">{{ kingdom.ore }}</div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-6 col-sm">
                         <div class="p-2 rounded bg-body-tertiary">
                             <i class="fa-solid fa-cubes text-secondary mb-1"></i>
                             <div class="small text-body-secondary">Stone</div>
                             <div class="fs-5 fw-bold">{{ kingdom.stone }}</div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-6 col-sm">
                         <div class="p-2 rounded bg-body-tertiary">
                             <i class="fa-solid fa-gem text-warning mb-1"></i>
                             <div class="small text-body-secondary">Luxuries</div>
@@ -273,17 +266,17 @@
                         <thead>
                             <tr class="text-body-secondary small text-uppercase">
                                 <th class="ps-3">Role</th>
-                                <th>Ability</th>
+                                <th class="d-none d-md-table-cell">Ability</th>
                                 <th>Character</th>
                                 <th>Status</th>
-                                <th class="pe-3 text-end">Invested</th>
+                                <th class="pe-3 text-end d-none d-sm-table-cell">Invested</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for assignment in leadership %}
                             <tr>
                                 <td class="ps-3 fw-semibold">{{ assignment.get_role_display }}</td>
-                                <td class="text-body-secondary small">{{ assignment.get_key_ability_display }}</td>
+                                <td class="text-body-secondary small d-none d-md-table-cell">{{ assignment.get_key_ability_display }}</td>
                                 <td>
                                     {% if assignment.is_vacant %}
                                     <span class="text-danger fst-italic">Vacant</span>
@@ -301,7 +294,7 @@
                                     <span class="badge bg-warning text-dark">No Downtime</span>
                                     {% endif %}
                                 </td>
-                                <td class="pe-3 text-end">
+                                <td class="pe-3 text-end d-none d-sm-table-cell">
                                     {% if assignment.is_invested %}
                                     <span class="badge bg-primary">+{{ assignment.status_bonus }}</span>
                                     {% else %}

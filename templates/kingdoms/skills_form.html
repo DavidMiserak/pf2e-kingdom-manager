@@ -19,7 +19,10 @@
         <div class="col">
             <div class="card shadow-sm h-100">
                 <div class="card-header">
-                    <h5 class="mb-0">{{ form.instance.get_skill_display }}</h5>
+                    <h5 class="mb-0">
+                        {{ form.instance.get_skill_display }}
+                        {% if form.government_boosted %}<i class="fa-solid fa-landmark ms-1 text-warning opacity-75" title="Government skill"></i>{% endif %}
+                    </h5>
                     <small class="text-muted">Key Ability: {{ form.instance.get_key_ability_display }}</small>
                 </div>
                 <div class="card-body">

@@ -36,6 +36,11 @@
                             <i class="fa-solid fa-scroll me-1"></i>{{ kingdom.get_charter_display }}
                         </span>
                         {% endif %}
+                        {% if kingdom.heartland %}
+                        <span class="badge bg-body-tertiary text-body-secondary">
+                            <i class="fa-solid fa-mountain-sun me-1"></i>{{ kingdom.get_heartland_display }}
+                        </span>
+                        {% endif %}
                         {% if kingdom.government %}
                         <span class="badge bg-body-tertiary text-body-secondary">
                             <i class="fa-solid fa-landmark me-1"></i>{{ kingdom.get_government_display }}

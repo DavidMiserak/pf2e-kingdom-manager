@@ -74,15 +74,23 @@ class KingdomDetailView(KingdomAccessMixin, DetailView):
             "user"
         ).all()
 
-        # Group skills by ability for display
-        skills_by_ability = {}
+        # Group skills and effects by ability for display
+        ability_effects = kingdom.get_ability_effects()
+        gov_skills = kingdom.government_skill_boosts
+        abilities_data = {}
         for ability in AbilityScore:
-            skills_by_ability[ability.label] = [
+            skills_for_ability = [
                 s
                 for s in context["skills"]
                 if SKILL_KEY_ABILITY.get(s.skill) == ability
             ]
-        context["skills_by_ability"] = skills_by_ability
+            for s in skills_for_ability:
+                s.government_boosted = s.skill in gov_skills
+            abilities_data[ability.label] = {
+                "skills": skills_for_ability,
+                "effects": ability_effects.get(ability.label, []),
+            }
+        context["abilities_data"] = abilities_data
         context["character_name_form"] = CharacterNameForm(instance=self.membership)
 
         # Recent turns
@@ -150,6 +158,9 @@ class SkillsUpdateView(GMRequiredMixin, TemplateView):
             context["formset"] = SkillProficiencyFormSet(
                 queryset=self.kingdom.skill_proficiencies.all()
             )
+        gov_skills = self.kingdom.government_skill_boosts
+        for form in context["formset"]:
+            form.government_boosted = form.instance.skill in gov_skills
         return context
 
     def post(self, request, *args, **kwargs):

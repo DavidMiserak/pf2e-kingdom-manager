@@ -148,6 +148,40 @@ class Government(models.TextChoices):
     YEOMANRY = "yeomanry", "Yeomanry"
 
 
+GOVERNMENT_EFFECTS = {
+    Government.DESPOTISM: [AbilityScore.STABILITY, AbilityScore.ECONOMY],
+    Government.FEUDALISM: [AbilityScore.STABILITY, AbilityScore.CULTURE],
+    Government.OLIGARCHY: [AbilityScore.LOYALTY, AbilityScore.ECONOMY],
+    Government.REPUBLIC: [AbilityScore.STABILITY, AbilityScore.LOYALTY],
+    Government.THAUMOCRACY: [AbilityScore.ECONOMY, AbilityScore.CULTURE],
+    Government.YEOMANRY: [AbilityScore.LOYALTY, AbilityScore.CULTURE],
+}
+
+GOVERNMENT_SKILLS = {
+    Government.DESPOTISM: [KingdomSkill.INTRIGUE, KingdomSkill.WARFARE],
+    Government.FEUDALISM: [KingdomSkill.DEFENSE, KingdomSkill.TRADE],
+    Government.OLIGARCHY: [KingdomSkill.ARTS, KingdomSkill.INDUSTRY],
+    Government.REPUBLIC: [KingdomSkill.ENGINEERING, KingdomSkill.POLITICS],
+    Government.THAUMOCRACY: [KingdomSkill.FOLKLORE, KingdomSkill.MAGIC],
+    Government.YEOMANRY: [KingdomSkill.AGRICULTURE, KingdomSkill.WILDERNESS],
+}
+
+
+class Heartland(models.TextChoices):
+    FOREST_SWAMP = "forest_swamp", "Forest or Swamp"
+    HILL_PLAIN = "hill_plain", "Hill or Plain"
+    LAKE_RIVER = "lake_river", "Lake or River"
+    MOUNTAIN_RUINS = "mountain_ruins", "Mountain or Ruins"
+
+
+HEARTLAND_EFFECTS = {
+    Heartland.FOREST_SWAMP: AbilityScore.CULTURE,
+    Heartland.HILL_PLAIN: AbilityScore.LOYALTY,
+    Heartland.LAKE_RIVER: AbilityScore.ECONOMY,
+    Heartland.MOUNTAIN_RUINS: AbilityScore.STABILITY,
+}
+
+
 # Size category breakpoints: (max_hexes, label, storage_limit, resource_die)
 SIZE_CATEGORIES = [
     (9, "Territory", 4, "d4"),
@@ -167,9 +201,29 @@ class Kingdom(models.Model):
         blank=True,
         default="",
     )
+    charter_ability_boost = models.CharField(
+        max_length=9,
+        choices=AbilityScore,
+        blank=True,
+        default="",
+        help_text="Free ability boost granted by charter (player's choice).",
+    )
     government = models.CharField(
         max_length=11,
         choices=Government,
+        blank=True,
+        default="",
+    )
+    government_ability_boost = models.CharField(
+        max_length=9,
+        choices=AbilityScore,
+        blank=True,
+        default="",
+        help_text="Free ability boost granted by government (player's choice).",
+    )
+    heartland = models.CharField(
+        max_length=15,
+        choices=Heartland,
         blank=True,
         default="",
     )
@@ -259,6 +313,70 @@ class Kingdom(models.Model):
         if self.charter:
             return CHARTER_EFFECTS[self.charter]["flaw"]
         return None
+
+    @property
+    def heartland_boost(self):
+        if self.heartland:
+            return HEARTLAND_EFFECTS[self.heartland]
+        return None
+
+    @property
+    def government_boosts(self):
+        if self.government:
+            return GOVERNMENT_EFFECTS[self.government]
+        return []
+
+    @property
+    def government_skill_boosts(self):
+        """Return set of skill values boosted by government."""
+        if self.government:
+            return {s.value for s in GOVERNMENT_SKILLS[self.government]}
+        return set()
+
+    def get_ability_effects(self):
+        """Return per-ability list of boost/flaw sources for display.
+
+        Keyed by ability label (e.g., "Culture") to match template iteration.
+        """
+        effects = {ability.label: [] for ability in AbilityScore}
+        # Charter fixed boost
+        if self.charter_boost:
+            effects[self.charter_boost.label].append(
+                {"source": self.get_charter_display(), "type": "boost", "free": False}
+            )
+        # Charter free boost
+        if self.charter_ability_boost:
+            label = AbilityScore(self.charter_ability_boost).label
+            effects[label].append(
+                {"source": self.get_charter_display(), "type": "boost", "free": True}
+            )
+        # Charter flaw
+        if self.charter_flaw:
+            effects[self.charter_flaw.label].append(
+                {"source": self.get_charter_display(), "type": "flaw", "free": False}
+            )
+        # Heartland boost
+        if self.heartland_boost:
+            effects[self.heartland_boost.label].append(
+                {"source": self.get_heartland_display(), "type": "boost", "free": False}
+            )
+        # Government fixed boosts
+        if self.government:
+            for ability in self.government_boosts:
+                effects[ability.label].append(
+                    {
+                        "source": self.get_government_display(),
+                        "type": "boost",
+                        "free": False,
+                    }
+                )
+        # Government free boost
+        if self.government_ability_boost:
+            label = AbilityScore(self.government_ability_boost).label
+            effects[label].append(
+                {"source": self.get_government_display(), "type": "boost", "free": True}
+            )
+        return effects
 
     @staticmethod
     def _ability_modifier(score):

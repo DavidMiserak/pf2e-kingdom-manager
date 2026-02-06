@@ -23,143 +23,137 @@
     </div>
     {% endif %}
 
-    <div class="row g-4">
-        <!-- Left column -->
-        <div class="col-lg-6">
-            <!-- Identity -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent pt-3 pb-0 border-bottom-0">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fa-solid fa-crown me-2 text-warning opacity-75"></i>Identity
-                    </h5>
+    <!-- Identity -->
+    <div class="border rounded p-2 p-sm-3 mb-3">
+        <h6 class="fw-semibold mb-3">
+            <i class="fa-solid fa-crown me-2 text-warning opacity-75"></i>Identity
+        </h6>
+            <div class="row g-3 mb-3">
+                <div class="col-8 col-md-6 col-lg-4">{{ form.name|as_crispy_field }}</div>
+                <div class="col-4 col-md-3 col-lg-2">{{ form.fame_type|as_crispy_field }}</div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="border rounded p-2 p-sm-3 h-100">
+                        {{ form.heartland|as_crispy_field }}
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="mb-3">{{ form.name|as_crispy_field }}</div>
-                    <div class="row g-3">
-                        <div class="col-sm-6">{{ form.charter|as_crispy_field }}</div>
-                        <div class="col-sm-6">{{ form.government|as_crispy_field }}</div>
+                <div class="col-md-8">
+                    <div class="border rounded p-2 p-sm-3 h-100">
+                        <div class="row g-3">
+                            <div class="col-sm-8">{{ form.charter|as_crispy_field }}</div>
+                            <div class="col-sm-4">{{ form.charter_ability_boost|as_crispy_field }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="border rounded p-2 p-sm-3">
+                        <div class="row g-3">
+                            <div class="col-sm-8">{{ form.government|as_crispy_field }}</div>
+                            <div class="col-sm-4">{{ form.government_ability_boost|as_crispy_field }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
+    </div>
 
+    <!-- Two-column layout for numeric fields -->
+    <div class="row g-3">
+        <!-- Left column -->
+        <div class="col-lg-6">
             <!-- Ability Scores -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent pt-3 pb-0 border-bottom-0">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fa-solid fa-chart-simple me-2 text-warning opacity-75"></i>Ability Scores
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-6">{{ form.culture_score|as_crispy_field }}</div>
-                        <div class="col-6">{{ form.economy_score|as_crispy_field }}</div>
-                        <div class="col-6">{{ form.loyalty_score|as_crispy_field }}</div>
-                        <div class="col-6">{{ form.stability_score|as_crispy_field }}</div>
-                    </div>
+            <div class="border rounded p-2 p-sm-3 mb-3">
+                <h6 class="fw-semibold mb-3">
+                    <i class="fa-solid fa-chart-simple me-2 text-warning opacity-75"></i>Ability Scores
+                </h6>
+                <div class="row g-3">
+                    <div class="col-sm-6">{{ form.culture_score|as_crispy_field }}</div>
+                    <div class="col-sm-6">{{ form.economy_score|as_crispy_field }}</div>
+                    <div class="col-sm-6">{{ form.loyalty_score|as_crispy_field }}</div>
+                    <div class="col-sm-6">{{ form.stability_score|as_crispy_field }}</div>
                 </div>
             </div>
 
             <!-- Ruin -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent pt-3 pb-0 border-bottom-0">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fa-solid fa-skull me-2 text-danger opacity-75"></i>Ruin
-                    </h5>
+            <div class="border rounded p-2 p-sm-3 mb-3">
+                <h6 class="fw-semibold mb-3">
+                    <i class="fa-solid fa-skull me-2 text-danger opacity-75"></i>Ruin
+                </h6>
+                <h6 class="text-body-secondary small text-uppercase mb-2">Corruption <span class="fw-normal">(vs Culture)</span></h6>
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">{{ form.corruption_points|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.corruption_threshold|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.corruption_penalty|as_crispy_field }}</div>
                 </div>
-                <div class="card-body">
-                    <h6 class="text-body-secondary small text-uppercase mb-2">Corruption <span class="fw-normal">(vs Culture)</span></h6>
-                    <div class="row g-3 mb-3">
-                        <div class="col-4">{{ form.corruption_points|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.corruption_threshold|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.corruption_penalty|as_crispy_field }}</div>
-                    </div>
-                    <h6 class="text-body-secondary small text-uppercase mb-2">Crime <span class="fw-normal">(vs Economy)</span></h6>
-                    <div class="row g-3 mb-3">
-                        <div class="col-4">{{ form.crime_points|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.crime_threshold|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.crime_penalty|as_crispy_field }}</div>
-                    </div>
-                    <h6 class="text-body-secondary small text-uppercase mb-2">Strife <span class="fw-normal">(vs Loyalty)</span></h6>
-                    <div class="row g-3 mb-3">
-                        <div class="col-4">{{ form.strife_points|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.strife_threshold|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.strife_penalty|as_crispy_field }}</div>
-                    </div>
-                    <h6 class="text-body-secondary small text-uppercase mb-2">Decay <span class="fw-normal">(vs Stability)</span></h6>
-                    <div class="row g-3">
-                        <div class="col-4">{{ form.decay_points|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.decay_threshold|as_crispy_field }}</div>
-                        <div class="col-4">{{ form.decay_penalty|as_crispy_field }}</div>
-                    </div>
+                <h6 class="text-body-secondary small text-uppercase mb-2">Crime <span class="fw-normal">(vs Economy)</span></h6>
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">{{ form.crime_points|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.crime_threshold|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.crime_penalty|as_crispy_field }}</div>
+                </div>
+                <h6 class="text-body-secondary small text-uppercase mb-2">Strife <span class="fw-normal">(vs Loyalty)</span></h6>
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">{{ form.strife_points|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.strife_threshold|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.strife_penalty|as_crispy_field }}</div>
+                </div>
+                <h6 class="text-body-secondary small text-uppercase mb-2">Decay <span class="fw-normal">(vs Stability)</span></h6>
+                <div class="row g-3">
+                    <div class="col-sm-4">{{ form.decay_points|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.decay_threshold|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.decay_penalty|as_crispy_field }}</div>
                 </div>
             </div>
         </div>
 
         <!-- Right column -->
         <div class="col-lg-6">
-            <!-- Level & Progression -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent pt-3 pb-0 border-bottom-0">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fa-solid fa-arrow-up me-2 text-warning opacity-75"></i>Progression
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-sm-4">{{ form.level|as_crispy_field }}</div>
-                        <div class="col-sm-4">{{ form.xp|as_crispy_field }}</div>
-                        <div class="col-sm-4">{{ form.claimed_hexes|as_crispy_field }}</div>
-                    </div>
+            <!-- Progression -->
+            <div class="border rounded p-2 p-sm-3 mb-3">
+                <h6 class="fw-semibold mb-3">
+                    <i class="fa-solid fa-arrow-up me-2 text-warning opacity-75"></i>Progression
+                </h6>
+                <div class="row g-3">
+                    <div class="col-sm-4">{{ form.level|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.xp|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.claimed_hexes|as_crispy_field }}</div>
                 </div>
             </div>
 
             <!-- Status -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent pt-3 pb-0 border-bottom-0">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fa-solid fa-person-burst me-2 text-danger opacity-75"></i>Status
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-sm-4">{{ form.unrest|as_crispy_field }}</div>
-                        <div class="col-sm-4">{{ form.fame_points|as_crispy_field }}</div>
-                        <div class="col-sm-4">{{ form.fame_type|as_crispy_field }}</div>
-                    </div>
+            <div class="border rounded p-2 p-sm-3 mb-3">
+                <h6 class="fw-semibold mb-3">
+                    <i class="fa-solid fa-person-burst me-2 text-danger opacity-75"></i>Status
+                </h6>
+                <div class="row g-3">
+                    <div class="col-sm-4">{{ form.unrest|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.fame_points|as_crispy_field }}</div>
                 </div>
             </div>
 
             <!-- Resources -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent pt-3 pb-0 border-bottom-0">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fa-solid fa-coins me-2 text-warning opacity-75"></i>Resources
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-sm-4">{{ form.resource_points|as_crispy_field }}</div>
-                        <div class="col-sm-4">{{ form.bonus_dice|as_crispy_field }}</div>
-                        <div class="col-sm-4">{{ form.penalty_dice|as_crispy_field }}</div>
-                    </div>
+            <div class="border rounded p-2 p-sm-3 mb-3">
+                <h6 class="fw-semibold mb-3">
+                    <i class="fa-solid fa-coins me-2 text-warning opacity-75"></i>Resources
+                </h6>
+                <div class="row g-3">
+                    <div class="col-sm-4">{{ form.resource_points|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.bonus_dice|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.penalty_dice|as_crispy_field }}</div>
                 </div>
             </div>
 
             <!-- Commodities -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent pt-3 pb-0 border-bottom-0">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fa-solid fa-boxes-stacked me-2 text-warning opacity-75"></i>Commodities
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-6 col-sm-4">{{ form.food|as_crispy_field }}</div>
-                        <div class="col-6 col-sm-4">{{ form.lumber|as_crispy_field }}</div>
-                        <div class="col-6 col-sm-4">{{ form.ore|as_crispy_field }}</div>
-                        <div class="col-6 col-sm-4">{{ form.stone|as_crispy_field }}</div>
-                        <div class="col-6 col-sm-4">{{ form.luxuries|as_crispy_field }}</div>
-                    </div>
+            <div class="border rounded p-2 p-sm-3 mb-3">
+                <h6 class="fw-semibold mb-3">
+                    <i class="fa-solid fa-boxes-stacked me-2 text-warning opacity-75"></i>Commodities
+                </h6>
+                <div class="row g-3">
+                    <div class="col-sm-4">{{ form.food|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.lumber|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.ore|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.stone|as_crispy_field }}</div>
+                    <div class="col-sm-4">{{ form.luxuries|as_crispy_field }}</div>
                 </div>
             </div>
         </div>
