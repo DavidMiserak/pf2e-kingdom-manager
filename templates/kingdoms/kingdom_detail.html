@@ -340,7 +340,7 @@
                     {% for turn in turns %}
                     <tr style="cursor: pointer;" onclick="window.location='{% url 'kingdoms:turn_detail' kingdom.pk turn.pk %}';">
                         <td class="ps-3 fw-semibold">{{ turn.turn_number }}</td>
-                        <td>{{ turn.in_game_month|default:"—" }}</td>
+                        <td>{{ turn.get_in_game_month_display|default:"—" }}</td>
                         <td>{{ turn.activity_count }}</td>
                         <td>{{ turn.xp_gained|default:"—" }}</td>
                         <td class="pe-3">

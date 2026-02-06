@@ -980,10 +980,10 @@ class TurnCreateViewTests(TestCase):
 
     def test_create_first_turn(self):
         self.client.force_login(self.gm)
-        response = self.client.post(self.url, {"in_game_month": "Pharast"})
+        response = self.client.post(self.url, {"in_game_month": "pharast"})
         turn = KingdomTurn.objects.get(kingdom=self.kingdom)
         self.assertEqual(turn.turn_number, 1)
-        self.assertEqual(turn.in_game_month, "Pharast")
+        self.assertEqual(turn.in_game_month, "pharast")
         self.assertRedirects(
             response,
             reverse(
@@ -995,7 +995,7 @@ class TurnCreateViewTests(TestCase):
     def test_auto_increment_turn_number(self):
         KingdomTurn.objects.create(kingdom=self.kingdom, turn_number=1)
         self.client.force_login(self.gm)
-        self.client.post(self.url, {"in_game_month": "Gozran"})
+        self.client.post(self.url, {"in_game_month": "gozran"})
         self.assertEqual(self.kingdom.turns.count(), 2)
         latest = self.kingdom.turns.first()
         self.assertEqual(latest.turn_number, 2)
@@ -1108,14 +1108,14 @@ class TurnUpdateViewTests(TestCase):
         response = self.client.post(
             self.url,
             {
-                "in_game_month": "Gozran",
+                "in_game_month": "gozran",
                 "starting_rp": 50,
                 "collected_taxes": True,
                 "xp_gained": 20,
             },
         )
         self.turn.refresh_from_db()
-        self.assertEqual(self.turn.in_game_month, "Gozran")
+        self.assertEqual(self.turn.in_game_month, "gozran")
         self.assertEqual(self.turn.starting_rp, 50)
         self.assertTrue(self.turn.collected_taxes)
         self.assertEqual(self.turn.xp_gained, 20)

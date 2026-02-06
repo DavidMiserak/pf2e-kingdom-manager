@@ -14,7 +14,7 @@
         </nav>
         <h1 class="mb-0">
             <i class="fa-solid fa-calendar-day me-2 text-warning"></i>Turn {{ turn.turn_number }}
-            {% if turn.in_game_month %}<small class="text-body-secondary"> — {{ turn.in_game_month }}</small>{% endif %}
+            {% if turn.in_game_month %}<small class="text-body-secondary"> — {{ turn.get_in_game_month_display }}</small>{% endif %}
         </h1>
     </div>
     <div class="d-flex gap-2">
@@ -45,7 +45,7 @@
                 <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Starting RP</div>
                 <div class="display-6 fw-bold">{{ turn.starting_rp|default:"—" }}</div>
                 {% if turn.resource_dice_rolled %}
-                <small class="text-body-secondary">{{ turn.resource_dice_rolled }}</small>
+                <small class="text-body-secondary">{{ turn.get_resource_dice_rolled_display }}</small>
                 {% endif %}
             </div>
         </div>

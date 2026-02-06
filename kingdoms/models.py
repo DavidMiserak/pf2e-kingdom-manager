@@ -6,6 +6,29 @@ from django.db import models
 from django.utils import timezone
 
 
+class GolarionMonth(models.TextChoices):
+    ABADIUS = "abadius", "Abadius"
+    CALISTRIL = "calistril", "Calistril"
+    PHARAST = "pharast", "Pharast"
+    GOZRAN = "gozran", "Gozran"
+    DESNUS = "desnus", "Desnus"
+    SARENITH = "sarenith", "Sarenith"
+    ERASTUS = "erastus", "Erastus"
+    ARODUS = "arodus", "Arodus"
+    ROVA = "rova", "Rova"
+    LAMASHAN = "lamashan", "Lamashan"
+    NETH = "neth", "Neth"
+    KUTHONA = "kuthona", "Kuthona"
+
+
+class ResourceDie(models.TextChoices):
+    D4 = "d4", "d4"
+    D6 = "d6", "d6"
+    D8 = "d8", "d8"
+    D10 = "d10", "d10"
+    D12 = "d12", "d12"
+
+
 class AbilityScore(models.TextChoices):
     CULTURE = "culture", "Culture"
     ECONOMY = "economy", "Economy"
@@ -581,11 +604,21 @@ class KingdomTurn(models.Model):
         related_name="turns",
     )
     turn_number = models.PositiveSmallIntegerField()
-    in_game_month = models.CharField(max_length=50, blank=True, default="")
+    in_game_month = models.CharField(
+        max_length=50,
+        choices=GolarionMonth,
+        blank=True,
+        default="",
+    )
 
     # Snapshot of starting state
     starting_rp = models.PositiveIntegerField(null=True, blank=True)
-    resource_dice_rolled = models.CharField(max_length=50, blank=True, default="")
+    resource_dice_rolled = models.CharField(
+        max_length=50,
+        choices=ResourceDie,
+        blank=True,
+        default="",
+    )
 
     # Commerce phase tracking
     collected_taxes = models.BooleanField(default=False)
