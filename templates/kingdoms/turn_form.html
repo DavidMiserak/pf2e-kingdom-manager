@@ -1,0 +1,47 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if object %}Edit Turn {{ object.turn_number }}{% else %}New Turn{% endif %} - {{ kingdom.name }} - PF2E Kingdom Manager{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'kingdoms:kingdom_detail' kingdom.pk %}">{{ kingdom.name }}</a></li>
+                {% if object %}
+                <li class="breadcrumb-item"><a href="{% url 'kingdoms:turn_detail' kingdom.pk object.pk %}">Turn {{ object.turn_number }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+                {% else %}
+                <li class="breadcrumb-item active">New Turn</li>
+                {% endif %}
+            </ol>
+        </nav>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom-0 pt-4">
+                <h4 class="mb-0 fw-semibold">
+                    {% if object %}
+                    <i class="fa-solid fa-pen me-2 text-warning"></i>Edit Turn {{ object.turn_number }}
+                    {% else %}
+                    <i class="fa-solid fa-plus me-2 text-warning"></i>New Turn
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fa-solid fa-save me-1"></i>Save
+                        </button>
+                        <a href="{% if object %}{% url 'kingdoms:turn_detail' kingdom.pk object.pk %}{% else %}{% url 'kingdoms:kingdom_detail' kingdom.pk %}{% endif %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

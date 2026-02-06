@@ -1,0 +1,201 @@
+{% extends "_base.html" %}
+
+{% block title %}Turn {{ turn.turn_number }} - {{ kingdom.name }} - PF2E Kingdom Manager{% endblock title %}
+
+{% block content %}
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{% url 'kingdoms:kingdom_detail' kingdom.pk %}">{{ kingdom.name }}</a></li>
+                <li class="breadcrumb-item active">Turn {{ turn.turn_number }}</li>
+            </ol>
+        </nav>
+        <h1 class="mb-0">
+            <i class="fa-solid fa-calendar-day me-2 text-warning"></i>Turn {{ turn.turn_number }}
+            {% if turn.in_game_month %}<small class="text-body-secondary"> — {{ turn.in_game_month }}</small>{% endif %}
+        </h1>
+    </div>
+    <div class="d-flex gap-2">
+        {% if is_gm %}
+        <a href="{% url 'kingdoms:turn_update' kingdom.pk turn.pk %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-pen me-1"></i>Edit
+        </a>
+        {% if not turn.is_complete %}
+        <form method="post" action="{% url 'kingdoms:turn_complete' kingdom.pk turn.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-sm">
+                <i class="fa-solid fa-check me-1"></i>Complete Turn
+            </button>
+        </form>
+        {% endif %}
+        <a href="{% url 'kingdoms:turn_delete' kingdom.pk turn.pk %}" class="btn btn-outline-danger btn-sm">
+            <i class="fa-solid fa-trash me-1"></i>Delete
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Turn Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-3">
+                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Starting RP</div>
+                <div class="display-6 fw-bold">{{ turn.starting_rp|default:"—" }}</div>
+                {% if turn.resource_dice_rolled %}
+                <small class="text-body-secondary">{{ turn.resource_dice_rolled }}</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-3">
+                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Ending RP</div>
+                <div class="display-6 fw-bold">{{ turn.ending_rp|default:"—" }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-3">
+                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">XP Gained</div>
+                <div class="display-6 fw-bold">{{ turn.xp_gained|default:"—" }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-3">
+                <div class="text-uppercase text-body-secondary small fw-semibold mb-1">Status</div>
+                <div class="h4 mb-0">
+                    {% if turn.is_complete %}
+                    <span class="badge bg-success">Complete</span>
+                    {% if turn.leveled_up %}<br><span class="badge bg-warning text-dark mt-1">Level Up!</span>{% endif %}
+                    {% else %}
+                    <span class="badge bg-primary">In Progress</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Commerce Phase -->
+{% if turn.collected_taxes or turn.improved_lifestyle or turn.tapped_treasury %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-transparent border-bottom-0 pt-3">
+        <h6 class="mb-0 fw-semibold">
+            <i class="fa-solid fa-coins me-2 text-warning opacity-75"></i>Commerce Phase
+        </h6>
+    </div>
+    <div class="card-body pt-2">
+        <div class="d-flex flex-wrap gap-2">
+            {% if turn.collected_taxes %}
+            <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Collected Taxes</span>
+            {% endif %}
+            {% if turn.improved_lifestyle %}
+            <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Improved Lifestyle</span>
+            {% endif %}
+            {% if turn.tapped_treasury %}
+            <span class="badge bg-warning text-dark"><i class="fa-solid fa-exclamation me-1"></i>Tapped Treasury</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Activities -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-transparent border-bottom-0 pt-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-semibold">
+            <i class="fa-solid fa-list-check me-2 text-warning opacity-75"></i>Activities
+        </h5>
+        {% if not turn.is_complete or is_gm %}
+        <a href="{% url 'kingdoms:activity_create' kingdom.pk turn.pk %}" class="btn btn-warning btn-sm">
+            <i class="fa-solid fa-plus me-1"></i>Log Activity
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body p-0">
+        {% if activities %}
+        {% for trait_name, trait_activities in activities_by_trait.items %}
+        <div class="px-3 pt-3">
+            <h6 class="text-uppercase text-body-secondary small fw-semibold mb-2">{{ trait_name }}</h6>
+        </div>
+        {% for activity in trait_activities %}
+        <div class="px-3 py-3 {% if not forloop.last or not forloop.parentloop.last %}border-bottom{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h6 class="mb-1 fw-semibold">{{ activity.activity_name }}</h6>
+                    <div class="text-body-secondary small mb-1">
+                        <i class="fa-solid fa-user me-1"></i>{{ activity.performer_name }}
+                        {% if activity.skill_used %}
+                        <span class="mx-1">·</span>
+                        <i class="fa-solid fa-book me-1"></i>{{ activity.get_skill_used_display }}
+                        {% endif %}
+                        {% if activity.total_result is not None %}
+                        <span class="mx-1">·</span>
+                        <i class="fa-solid fa-dice-d20 me-1"></i>{{ activity.roll_result }} + {{ activity.total_modifier }} = {{ activity.total_result }}
+                        {% if activity.dc %} vs DC {{ activity.dc }}{% endif %}
+                        {% endif %}
+                    </div>
+                    {% if activity.degree_of_success %}
+                    <div class="mb-1">
+                        {% if activity.degree_of_success == "critical_success" %}
+                        <span class="badge bg-success"><i class="fa-solid fa-star me-1"></i>Critical Success</span>
+                        {% elif activity.degree_of_success == "success" %}
+                        <span class="badge bg-info"><i class="fa-solid fa-check me-1"></i>Success</span>
+                        {% elif activity.degree_of_success == "failure" %}
+                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-xmark me-1"></i>Failure</span>
+                        {% elif activity.degree_of_success == "critical_failure" %}
+                        <span class="badge bg-danger"><i class="fa-solid fa-burst me-1"></i>Critical Failure</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if activity.notes %}
+                    <p class="mb-0 small text-body-secondary">{{ activity.notes|linebreaksbr }}</p>
+                    {% endif %}
+                </div>
+                {% if is_gm or activity.created_by == request.user %}
+                <div class="ms-3 d-flex gap-1">
+                    <a href="{% url 'kingdoms:activity_update' kingdom.pk activity.pk %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <form method="post" action="{% url 'kingdoms:activity_delete' kingdom.pk activity.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this activity?');">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+        {% else %}
+        <div class="card-body text-center text-body-secondary py-4">
+            <i class="fa-solid fa-list-check fa-2x mb-2 opacity-25"></i>
+            <p class="mb-0">No activities logged yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Turn Notes -->
+{% if turn.notes %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-transparent border-bottom-0 pt-3">
+        <h6 class="mb-0 fw-semibold">
+            <i class="fa-solid fa-note-sticky me-2 text-warning opacity-75"></i>Notes
+        </h6>
+    </div>
+    <div class="card-body pt-2">
+        {{ turn.notes|linebreaksbr }}
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
