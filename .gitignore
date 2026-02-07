@@ -48,6 +48,7 @@ tmp/
 temp/
 *.tmp
 *.temp
+memory/
 CLAUDE.md
 *~
 *.sqlite
