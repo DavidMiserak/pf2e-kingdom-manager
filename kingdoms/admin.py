@@ -1,13 +1,10 @@
 from django.contrib import admin
 
-from .models import (
-    ActivityLog,
-    Kingdom,
-    KingdomMembership,
-    KingdomSkillProficiency,
-    KingdomTurn,
-    LeadershipAssignment,
-)
+from leadership.models import LeadershipAssignment
+from skills.models import KingdomSkillProficiency
+from turns.models import KingdomTurn
+
+from .models import Kingdom, KingdomMembership
 
 
 class LeadershipAssignmentInline(admin.TabularInline):
@@ -44,16 +41,3 @@ class KingdomAdmin(admin.ModelAdmin):
 class KingdomMembershipAdmin(admin.ModelAdmin):
     list_display = ["user", "kingdom", "role"]
     list_filter = ["role"]
-
-
-class ActivityLogInline(admin.TabularInline):
-    model = ActivityLog
-    extra = 0
-    fields = ["activity_name", "activity_trait", "performed_by", "degree_of_success"]
-
-
-@admin.register(KingdomTurn)
-class KingdomTurnAdmin(admin.ModelAdmin):
-    list_display = ["kingdom", "turn_number", "in_game_month", "completed_at"]
-    list_filter = ["kingdom"]
-    inlines = [ActivityLogInline]

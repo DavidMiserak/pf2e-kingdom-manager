@@ -9,7 +9,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-3">
                 <li class="breadcrumb-item"><a href="{% url 'kingdoms:kingdom_detail' kingdom.pk %}">{{ kingdom.name }}</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'kingdoms:turn_detail' kingdom.pk turn.pk %}">Turn {{ turn.turn_number }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'turns:turn_detail' kingdom.pk turn.pk %}">Turn {{ turn.turn_number }}</a></li>
                 <li class="breadcrumb-item active">{% if object %}Edit Activity{% else %}Log Activity{% endif %}</li>
             </ol>
         </nav>
@@ -35,7 +35,7 @@
                         <button type="submit" class="btn btn-warning">
                             <i class="fa-solid fa-save me-1"></i>Save
                         </button>
-                        <a href="{% url 'kingdoms:turn_detail' kingdom.pk turn.pk %}" class="btn btn-outline-secondary">
+                        <a href="{% url 'turns:turn_detail' kingdom.pk turn.pk %}" class="btn btn-outline-secondary">
                             Cancel
                         </a>
                     </div>

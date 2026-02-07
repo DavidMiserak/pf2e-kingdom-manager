@@ -10,7 +10,7 @@
             <ol class="breadcrumb mb-3">
                 <li class="breadcrumb-item"><a href="{% url 'kingdoms:kingdom_detail' kingdom.pk %}">{{ kingdom.name }}</a></li>
                 {% if object %}
-                <li class="breadcrumb-item"><a href="{% url 'kingdoms:turn_detail' kingdom.pk object.pk %}">Turn {{ object.turn_number }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'turns:turn_detail' kingdom.pk object.pk %}">Turn {{ object.turn_number }}</a></li>
                 <li class="breadcrumb-item active">Edit</li>
                 {% else %}
                 <li class="breadcrumb-item active">New Turn</li>
@@ -35,7 +35,7 @@
                         <button type="submit" class="btn btn-warning">
                             <i class="fa-solid fa-save me-1"></i>Save
                         </button>
-                        <a href="{% if object %}{% url 'kingdoms:turn_detail' kingdom.pk object.pk %}{% else %}{% url 'kingdoms:kingdom_detail' kingdom.pk %}{% endif %}" class="btn btn-outline-secondary">
+                        <a href="{% if object %}{% url 'turns:turn_detail' kingdom.pk object.pk %}{% else %}{% url 'kingdoms:kingdom_detail' kingdom.pk %}{% endif %}" class="btn btn-outline-secondary">
                             Cancel
                         </a>
                     </div>

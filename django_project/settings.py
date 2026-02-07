@@ -49,6 +49,10 @@ INSTALLED_APPS = [
     # Local
     "accounts",
     "kingdoms",
+    "leadership",
+    "skills",
+    "turns",
+    "territory",
     "pages",
 ]
 

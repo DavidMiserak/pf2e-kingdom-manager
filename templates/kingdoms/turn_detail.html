@@ -19,18 +19,18 @@
     </div>
     <div class="d-flex gap-2">
         {% if is_gm %}
-        <a href="{% url 'kingdoms:turn_update' kingdom.pk turn.pk %}" class="btn btn-outline-secondary btn-sm">
+        <a href="{% url 'turns:turn_update' kingdom.pk turn.pk %}" class="btn btn-outline-secondary btn-sm">
             <i class="fa-solid fa-pen me-1"></i>Edit
         </a>
         {% if not turn.is_complete %}
-        <form method="post" action="{% url 'kingdoms:turn_complete' kingdom.pk turn.pk %}" class="d-inline">
+        <form method="post" action="{% url 'turns:turn_complete' kingdom.pk turn.pk %}" class="d-inline">
             {% csrf_token %}
             <button type="submit" class="btn btn-success btn-sm">
                 <i class="fa-solid fa-check me-1"></i>Complete Turn
             </button>
         </form>
         {% endif %}
-        <a href="{% url 'kingdoms:turn_delete' kingdom.pk turn.pk %}" class="btn btn-outline-danger btn-sm">
+        <a href="{% url 'turns:turn_delete' kingdom.pk turn.pk %}" class="btn btn-outline-danger btn-sm">
             <i class="fa-solid fa-trash me-1"></i>Delete
         </a>
         {% endif %}
@@ -141,7 +141,7 @@
             <i class="fa-solid fa-list-check me-2 text-warning opacity-75"></i>Activities
         </h5>
         {% if not turn.is_complete or is_gm %}
-        <a href="{% url 'kingdoms:activity_create' kingdom.pk turn.pk %}" class="btn btn-warning btn-sm">
+        <a href="{% url 'turns:activity_create' kingdom.pk turn.pk %}" class="btn btn-warning btn-sm">
             <i class="fa-solid fa-plus me-1"></i>Log Activity
         </a>
         {% endif %}
@@ -188,10 +188,10 @@
                 </div>
                 {% if is_gm or activity.created_by == request.user %}
                 <div class="ms-3 d-flex gap-1">
-                    <a href="{% url 'kingdoms:activity_update' kingdom.pk activity.pk %}" class="btn btn-outline-secondary btn-sm">
+                    <a href="{% url 'turns:activity_update' kingdom.pk activity.pk %}" class="btn btn-outline-secondary btn-sm">
                         <i class="fa-solid fa-pen"></i>
                     </a>
-                    <form method="post" action="{% url 'kingdoms:activity_delete' kingdom.pk activity.pk %}" class="d-inline">
+                    <form method="post" action="{% url 'turns:activity_delete' kingdom.pk activity.pk %}" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this activity?');">
                             <i class="fa-solid fa-trash"></i>

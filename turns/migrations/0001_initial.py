@@ -1,0 +1,256 @@
+import django.db.models.deletion
+from django.conf import settings
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        ("kingdoms", "0013_move_skills"),
+        ("leadership", "0001_initial"),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.CreateModel(
+                    name="KingdomTurn",
+                    fields=[
+                        (
+                            "id",
+                            models.BigAutoField(
+                                auto_created=True,
+                                primary_key=True,
+                                serialize=False,
+                                verbose_name="ID",
+                            ),
+                        ),
+                        ("turn_number", models.PositiveSmallIntegerField()),
+                        (
+                            "in_game_month",
+                            models.CharField(
+                                blank=True,
+                                choices=[
+                                    ("abadius", "Abadius"),
+                                    ("calistril", "Calistril"),
+                                    ("pharast", "Pharast"),
+                                    ("gozran", "Gozran"),
+                                    ("desnus", "Desnus"),
+                                    ("sarenith", "Sarenith"),
+                                    ("erastus", "Erastus"),
+                                    ("arodus", "Arodus"),
+                                    ("rova", "Rova"),
+                                    ("lamashan", "Lamashan"),
+                                    ("neth", "Neth"),
+                                    ("kuthona", "Kuthona"),
+                                ],
+                                default="",
+                                max_length=50,
+                            ),
+                        ),
+                        (
+                            "starting_rp",
+                            models.PositiveIntegerField(blank=True, null=True),
+                        ),
+                        (
+                            "resource_dice_rolled",
+                            models.CharField(
+                                blank=True,
+                                choices=[
+                                    ("d4", "d4"),
+                                    ("d6", "d6"),
+                                    ("d8", "d8"),
+                                    ("d10", "d10"),
+                                    ("d12", "d12"),
+                                ],
+                                default="",
+                                max_length=50,
+                            ),
+                        ),
+                        ("collected_taxes", models.BooleanField(default=False)),
+                        ("improved_lifestyle", models.BooleanField(default=False)),
+                        ("tapped_treasury", models.BooleanField(default=False)),
+                        ("event_occurred", models.BooleanField(default=False)),
+                        ("event_xp", models.PositiveIntegerField(default=0)),
+                        (
+                            "ending_rp",
+                            models.PositiveIntegerField(blank=True, null=True),
+                        ),
+                        (
+                            "rp_converted_to_xp",
+                            models.PositiveIntegerField(blank=True, null=True),
+                        ),
+                        (
+                            "xp_gained",
+                            models.PositiveIntegerField(blank=True, null=True),
+                        ),
+                        ("leveled_up", models.BooleanField(default=False)),
+                        ("notes", models.TextField(blank=True, default="")),
+                        ("created_at", models.DateTimeField(auto_now_add=True)),
+                        (
+                            "completed_at",
+                            models.DateTimeField(blank=True, null=True),
+                        ),
+                        (
+                            "kingdom",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.CASCADE,
+                                related_name="turns",
+                                to="kingdoms.kingdom",
+                            ),
+                        ),
+                    ],
+                    options={
+                        "ordering": ["-turn_number"],
+                        "unique_together": {("kingdom", "turn_number")},
+                        "indexes": [
+                            models.Index(
+                                fields=["kingdom", "-turn_number"],
+                                name="kingdoms_ki_kingdom_7b0289_idx",
+                            ),
+                            models.Index(
+                                fields=["kingdom", "completed_at"],
+                                name="kingdoms_ki_kingdom_324188_idx",
+                            ),
+                        ],
+                        "db_table": "kingdoms_kingdomturn",
+                    },
+                ),
+                migrations.CreateModel(
+                    name="ActivityLog",
+                    fields=[
+                        (
+                            "id",
+                            models.BigAutoField(
+                                auto_created=True,
+                                primary_key=True,
+                                serialize=False,
+                                verbose_name="ID",
+                            ),
+                        ),
+                        ("activity_name", models.CharField(max_length=100)),
+                        (
+                            "activity_trait",
+                            models.CharField(
+                                choices=[
+                                    ("upkeep", "Upkeep"),
+                                    ("commerce", "Commerce"),
+                                    ("leadership", "Leadership"),
+                                    ("region", "Region"),
+                                    ("civic", "Civic"),
+                                    ("fortune", "Fortune"),
+                                    ("downtime", "Downtime"),
+                                ],
+                                max_length=15,
+                            ),
+                        ),
+                        (
+                            "skill_used",
+                            models.CharField(
+                                blank=True,
+                                choices=[
+                                    ("agriculture", "Agriculture"),
+                                    ("arts", "Arts"),
+                                    ("boating", "Boating"),
+                                    ("defense", "Defense"),
+                                    ("engineering", "Engineering"),
+                                    ("exploration", "Exploration"),
+                                    ("folklore", "Folklore"),
+                                    ("industry", "Industry"),
+                                    ("intrigue", "Intrigue"),
+                                    ("magic", "Magic"),
+                                    ("politics", "Politics"),
+                                    ("scholarship", "Scholarship"),
+                                    ("statecraft", "Statecraft"),
+                                    ("trade", "Trade"),
+                                    ("warfare", "Warfare"),
+                                    ("wilderness", "Wilderness"),
+                                ],
+                                default="",
+                                max_length=12,
+                            ),
+                        ),
+                        (
+                            "roll_result",
+                            models.PositiveSmallIntegerField(blank=True, null=True),
+                        ),
+                        (
+                            "total_modifier",
+                            models.SmallIntegerField(blank=True, null=True),
+                        ),
+                        (
+                            "dc",
+                            models.PositiveSmallIntegerField(blank=True, null=True),
+                        ),
+                        (
+                            "degree_of_success",
+                            models.CharField(
+                                blank=True,
+                                choices=[
+                                    ("critical_success", "Critical Success"),
+                                    ("success", "Success"),
+                                    ("failure", "Failure"),
+                                    ("critical_failure", "Critical Failure"),
+                                ],
+                                default="",
+                                max_length=16,
+                            ),
+                        ),
+                        ("notes", models.TextField(blank=True, default="")),
+                        ("created_at", models.DateTimeField(auto_now_add=True)),
+                        (
+                            "created_by",
+                            models.ForeignKey(
+                                null=True,
+                                on_delete=django.db.models.deletion.SET_NULL,
+                                related_name="activities_created",
+                                to=settings.AUTH_USER_MODEL,
+                            ),
+                        ),
+                        (
+                            "kingdom",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.CASCADE,
+                                related_name="activities",
+                                to="kingdoms.kingdom",
+                            ),
+                        ),
+                        (
+                            "performed_by",
+                            models.ForeignKey(
+                                blank=True,
+                                null=True,
+                                on_delete=django.db.models.deletion.SET_NULL,
+                                related_name="activities",
+                                to="leadership.leadershipassignment",
+                            ),
+                        ),
+                        (
+                            "turn",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.CASCADE,
+                                related_name="activities",
+                                to="turns.kingdomturn",
+                            ),
+                        ),
+                    ],
+                    options={
+                        "verbose_name": "activity log",
+                        "verbose_name_plural": "activity logs",
+                        "ordering": ["-created_at"],
+                        "indexes": [
+                            models.Index(
+                                fields=["turn", "-created_at"],
+                                name="kingdoms_ac_turn_id_731fbc_idx",
+                            ),
+                        ],
+                        "db_table": "kingdoms_activitylog",
+                    },
+                ),
+            ],
+            database_operations=[],
+        ),
+    ]
