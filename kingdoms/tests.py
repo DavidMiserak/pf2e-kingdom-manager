@@ -6,6 +6,8 @@ from .models import Kingdom, KingdomMembership, MembershipRole
 
 User = get_user_model()
 
+TEST_PASSWORD = "testpass123"  # nosec B105
+
 
 class KingdomModelTests(TestCase):
     def setUp(self):
@@ -108,7 +110,7 @@ class KingdomMembershipTests(TestCase):
         self.user = User.objects.create_user(
             username="testuser",
             email="test@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         self.membership = KingdomMembership.objects.create(
@@ -137,7 +139,7 @@ class KingdomListViewTests(TestCase):
         self.user = User.objects.create_user(
             username="testuser",
             email="test@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="My Kingdom")
         KingdomMembership.objects.create(
@@ -170,7 +172,7 @@ class KingdomCreateViewTests(TestCase):
         self.user = User.objects.create_user(
             username="testuser",
             email="test@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.url = reverse("kingdoms:kingdom_create")
 
@@ -216,17 +218,17 @@ class KingdomDetailViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.outsider = User.objects.create_user(
             username="outsider",
             email="outsider@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         self.kingdom.initialize_defaults()
@@ -271,12 +273,12 @@ class KingdomUpdateViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -354,12 +356,12 @@ class MemberManageViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -423,7 +425,7 @@ class JoinKingdomViewTests(TestCase):
         self.user = User.objects.create_user(
             username="newplayer",
             email="newplayer@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         self.kingdom.initialize_defaults()
@@ -484,12 +486,12 @@ class RegenerateInviteViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -523,12 +525,12 @@ class KingdomDeleteViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Doomed Kingdom")
         KingdomMembership.objects.create(
@@ -572,12 +574,12 @@ class UpdateCharacterNameViewTests(TestCase):
         self.user = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.outsider = User.objects.create_user(
             username="outsider",
             email="outsider@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         self.membership = KingdomMembership.objects.create(
@@ -607,3 +609,143 @@ class UpdateCharacterNameViewTests(TestCase):
         self.client.force_login(self.outsider)
         response = self.client.post(self.url, {"character_name": "Sauron"})
         self.assertEqual(response.status_code, 404)
+
+
+class KingdomAccessMixinTests(TestCase):
+    """Direct tests for KingdomAccessMixin behavior."""
+
+    def setUp(self):
+        self.gm = User.objects.create_user(
+            username="gm",
+            email="gm@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.player = User.objects.create_user(
+            username="player",
+            email="player@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.outsider = User.objects.create_user(
+            username="outsider",
+            email="outsider@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.kingdom = Kingdom.objects.create(name="Test Kingdom")
+        KingdomMembership.objects.create(
+            user=self.gm,
+            kingdom=self.kingdom,
+            role=MembershipRole.GM,
+        )
+        KingdomMembership.objects.create(
+            user=self.player,
+            kingdom=self.kingdom,
+            role=MembershipRole.PLAYER,
+        )
+        # Use kingdom_detail as test URL (uses KingdomAccessMixin)
+        self.url = reverse("kingdoms:kingdom_detail", kwargs={"pk": self.kingdom.pk})
+
+    def test_unauthenticated_user_redirects_to_login(self):
+        """Unauthenticated users should be redirected to login."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/accounts/login/", response.url)
+
+    def test_non_existent_kingdom_returns_404(self):
+        """Accessing non-existent kingdom should return 404."""
+        self.client.force_login(self.gm)
+        bad_url = reverse("kingdoms:kingdom_detail", kwargs={"pk": 99999})
+        response = self.client.get(bad_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_non_member_gets_404(self):
+        """Non-members should get 404."""
+        self.client.force_login(self.outsider)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_member_can_access(self):
+        """Kingdom members should be able to access."""
+        self.client.force_login(self.player)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_context_contains_kingdom_and_membership(self):
+        """Context should contain kingdom, membership, and is_gm flag."""
+        self.client.force_login(self.player)
+        response = self.client.get(self.url)
+        self.assertIn("kingdom", response.context)
+        self.assertIn("membership", response.context)
+        self.assertIn("is_gm", response.context)
+        self.assertEqual(response.context["kingdom"], self.kingdom)
+        self.assertEqual(response.context["is_gm"], False)
+
+    def test_gm_has_is_gm_flag_true(self):
+        """GM should have is_gm=True in context."""
+        self.client.force_login(self.gm)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context["is_gm"], True)
+
+
+class GMRequiredMixinTests(TestCase):
+    """Direct tests for GMRequiredMixin behavior."""
+
+    def setUp(self):
+        self.gm = User.objects.create_user(
+            username="gm",
+            email="gm@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.player = User.objects.create_user(
+            username="player",
+            email="player@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.outsider = User.objects.create_user(
+            username="outsider",
+            email="outsider@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.kingdom = Kingdom.objects.create(name="Test Kingdom")
+        KingdomMembership.objects.create(
+            user=self.gm,
+            kingdom=self.kingdom,
+            role=MembershipRole.GM,
+        )
+        KingdomMembership.objects.create(
+            user=self.player,
+            kingdom=self.kingdom,
+            role=MembershipRole.PLAYER,
+        )
+        # Use kingdom_update as test URL (uses GMRequiredMixin)
+        self.url = reverse("kingdoms:kingdom_update", kwargs={"pk": self.kingdom.pk})
+
+    def test_unauthenticated_user_redirects_to_login(self):
+        """Unauthenticated users should be redirected to login."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/accounts/login/", response.url)
+
+    def test_non_existent_kingdom_returns_404(self):
+        """Accessing non-existent kingdom should return 404."""
+        self.client.force_login(self.gm)
+        bad_url = reverse("kingdoms:kingdom_update", kwargs={"pk": 99999})
+        response = self.client.get(bad_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_non_member_gets_404(self):
+        """Non-members should get 404."""
+        self.client.force_login(self.outsider)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_player_gets_404(self):
+        """Players (non-GMs) should get 404."""
+        self.client.force_login(self.player)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_gm_can_access(self):
+        """GMs should be able to access."""
+        self.client.force_login(self.gm)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
