@@ -43,6 +43,9 @@ coverage/
 htmlcov/
 .nyc_output/
 
+# SonarQube
+.scannerwork/
+
 # Temporary files
 tmp/
 temp/
