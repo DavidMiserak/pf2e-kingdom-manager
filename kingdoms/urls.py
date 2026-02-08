@@ -1,46 +1,14 @@
-from django.urls import path
+"""
+Root URL configuration for all kingdom-related apps.
 
-from .views import (
-    JoinKingdomView,
-    KingdomCreateView,
-    KingdomDeleteView,
-    KingdomDetailView,
-    KingdomListView,
-    KingdomMemberManageView,
-    KingdomUpdateView,
-    RegenerateInviteView,
-    UpdateCharacterNameView,
-)
+Mounts kingdoms, leadership, skills, and turns under the /kingdoms/ prefix.
+"""
 
-app_name = "kingdoms"
+from django.urls import include, path
+
 urlpatterns = [
-    path("", KingdomListView.as_view(), name="kingdom_list"),
-    path("create/", KingdomCreateView.as_view(), name="kingdom_create"),
-    path(
-        "join/<uuid:invite_code>/",
-        JoinKingdomView.as_view(),
-        name="join",
-    ),
-    path("<int:pk>/", KingdomDetailView.as_view(), name="kingdom_detail"),
-    path("<int:pk>/edit/", KingdomUpdateView.as_view(), name="kingdom_update"),
-    path(
-        "<int:pk>/character-name/",
-        UpdateCharacterNameView.as_view(),
-        name="update_character_name",
-    ),
-    path(
-        "<int:pk>/delete/",
-        KingdomDeleteView.as_view(),
-        name="kingdom_delete",
-    ),
-    path(
-        "<int:pk>/members/",
-        KingdomMemberManageView.as_view(),
-        name="member_manage",
-    ),
-    path(
-        "<int:pk>/members/regenerate-invite/",
-        RegenerateInviteView.as_view(),
-        name="regenerate_invite",
-    ),
+    path("", include(("kingdoms.urls_core", "kingdoms"))),
+    path("", include(("leadership.urls", "leadership"))),
+    path("", include(("skills.urls", "skills"))),
+    path("", include(("turns.urls", "turns"))),
 ]
