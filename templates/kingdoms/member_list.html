@@ -47,12 +47,13 @@
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
+                <caption class="visually-hidden">Current members of {{ kingdom.name }}</caption>
                 <thead>
                     <tr class="text-body-secondary small text-uppercase">
-                        <th class="ps-3">Character</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th class="pe-3"></th>
+                        <th scope="col" class="ps-3">Character</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
+                        <th scope="col" class="pe-3"><span class="visually-hidden">Actions</span></th>
                     </tr>
                 </thead>
                 <tbody>
