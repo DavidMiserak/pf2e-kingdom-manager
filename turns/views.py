@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.views.generic.base import TemplateView
@@ -97,12 +96,7 @@ class TurnCompleteView(GMRequiredMixin, View):
         else:
             turn.complete_turn()
             messages.success(request, f"Turn {turn.turn_number} marked as complete.")
-        return redirect(
-            reverse(
-                "turns:turn_detail",
-                kwargs={"pk": self.kingdom.pk, "turn_pk": turn.pk},
-            )
-        )
+        return redirect(turn_url("turn_detail", self.kingdom.pk, turn.pk))
 
 
 # --- Activity views ---
@@ -137,12 +131,7 @@ class ActivityCreateView(KingdomAccessMixin, CreateView):
     def form_valid(self, form):
         if self.turn.is_complete and self.membership.role != MembershipRole.GM:
             messages.error(self.request, "Cannot add activities to a completed turn.")
-            return redirect(
-                reverse(
-                    "turns:turn_detail",
-                    kwargs={"pk": self.kingdom.pk, "turn_pk": self.turn.pk},
-                )
-            )
+            return redirect(turn_url("turn_detail", self.kingdom.pk, self.turn.pk))
         form.instance.kingdom = self.kingdom
         form.instance.turn = self.turn
         form.instance.created_by = self.request.user
@@ -204,13 +193,7 @@ class ActivityUpdateView(KingdomAccessMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "turns:turn_detail",
-            kwargs={
-                "pk": self.kingdom.pk,
-                "turn_pk": self.object.turn.pk,
-            },
-        )
+        return turn_url("turn_detail", self.kingdom.pk, self.object.turn.pk)
 
 
 class ActivityDeleteView(KingdomAccessMixin, View):
@@ -223,9 +206,4 @@ class ActivityDeleteView(KingdomAccessMixin, View):
         turn_pk = activity.turn.pk
         activity.delete()
         messages.success(request, "Activity deleted.")
-        return redirect(
-            reverse(
-                "turns:turn_detail",
-                kwargs={"pk": self.kingdom.pk, "turn_pk": turn_pk},
-            )
-        )
+        return redirect(turn_url("turn_detail", self.kingdom.pk, turn_pk))
