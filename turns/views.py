@@ -147,10 +147,7 @@ class ActivityCreateView(KingdomAccessMixin, CreateView):
         form.instance.turn = self.turn
         form.instance.created_by = self.request.user
         # Auto-calculate degree of success if roll data provided and not manually set
-        if not form.instance.degree_of_success:
-            calculated = form.instance.calculate_degree_of_success()
-            if calculated:
-                form.instance.degree_of_success = calculated
+        form.instance.auto_populate_degree_of_success()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -186,9 +183,7 @@ class ActivityUpdateView(KingdomAccessMixin, UpdateView):
             )
         except ActivityLog.DoesNotExist:
             raise Http404
-        is_gm = self.membership.role == MembershipRole.GM
-        is_creator = self.activity_obj.created_by == request.user
-        if not (is_gm or is_creator):
+        if not self.activity_obj.can_be_modified_by(request.user, self.membership):
             raise Http404
         # Skip KingdomAccessMixin.dispatch to avoid duplicate lookups
         return LoginRequiredMixin.dispatch(self, request, *args, **kwargs)
@@ -205,10 +200,7 @@ class ActivityUpdateView(KingdomAccessMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        if not form.instance.degree_of_success:
-            calculated = form.instance.calculate_degree_of_success()
-            if calculated:
-                form.instance.degree_of_success = calculated
+        form.instance.auto_populate_degree_of_success()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -226,9 +218,7 @@ class ActivityDeleteView(KingdomAccessMixin, View):
         activity = get_object_or_404(
             ActivityLog, pk=self.kwargs["activity_pk"], kingdom=self.kingdom
         )
-        is_gm = self.membership.role == MembershipRole.GM
-        is_creator = activity.created_by == request.user
-        if not (is_gm or is_creator):
+        if not activity.can_be_modified_by(request.user, self.membership):
             raise Http404
         turn_pk = activity.turn.pk
         activity.delete()

@@ -201,3 +201,26 @@ class ActivityLog(models.Model):
             degree = self._downgrade_degree(degree)
 
         return degree
+
+    def auto_populate_degree_of_success(self):
+        """
+        Auto-calculate and set degree_of_success if not already set.
+        Returns True if the field was populated, False otherwise.
+        """
+        if not self.degree_of_success:
+            calculated = self.calculate_degree_of_success()
+            if calculated:
+                self.degree_of_success = calculated
+                return True
+        return False
+
+    def can_be_modified_by(self, user, membership):
+        """
+        Check if a user can modify this activity.
+        Users can modify if they are a GM or the activity creator.
+        """
+        from kingdoms.models import MembershipRole
+
+        is_gm = membership.role == MembershipRole.GM
+        is_creator = self.created_by == user
+        return is_gm or is_creator

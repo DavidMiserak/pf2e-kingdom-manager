@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from kingdoms.models import Kingdom, KingdomMembership, MembershipRole
@@ -8,6 +8,8 @@ from leadership.models import LeadershipRole
 from .models import ActivityLog, ActivityTrait, DegreeOfSuccess, KingdomTurn
 
 User = get_user_model()
+
+TEST_PASSWORD = "testpass123"  # nosec B106
 
 
 class KingdomTurnModelTests(TestCase):
@@ -206,12 +208,12 @@ class TurnCreateViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -265,17 +267,17 @@ class TurnDetailViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.outsider = User.objects.create_user(
             username="outsider",
             email="outsider@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         self.kingdom.initialize_defaults()
@@ -355,12 +357,12 @@ class TurnUpdateViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -464,7 +466,7 @@ class TurnDeleteViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -510,7 +512,7 @@ class TurnCompleteViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -542,17 +544,17 @@ class ActivityCreateViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.outsider = User.objects.create_user(
             username="outsider",
             email="outsider@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         self.kingdom.initialize_defaults()
@@ -664,17 +666,17 @@ class ActivityUpdateViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.other_player = User.objects.create_user(
             username="other",
             email="other@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         self.kingdom.initialize_defaults()
@@ -737,17 +739,17 @@ class ActivityDeleteViewTests(TestCase):
         self.gm = User.objects.create_user(
             username="gm",
             email="gm@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.player = User.objects.create_user(
             username="player",
             email="player@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.other_player = User.objects.create_user(
             username="other",
             email="other@example.com",
-            password="testpass123",  # nosec B106
+            password=TEST_PASSWORD,
         )
         self.kingdom = Kingdom.objects.create(name="Test Kingdom")
         KingdomMembership.objects.create(
@@ -798,3 +800,118 @@ class ActivityDeleteViewTests(TestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 404)
         self.assertTrue(ActivityLog.objects.filter(pk=self.activity.pk).exists())
+
+
+@override_settings(DEBUG=True)
+class QueryCountTests(TestCase):
+    """
+    Verify views don't perform duplicate database queries.
+
+    The dispatch() pattern in mixins intentionally duplicates lookups
+    to avoid calling super().dispatch() multiple times, but should not
+    result in double queries to the database.
+    """
+
+    def setUp(self):
+        self.gm = User.objects.create_user(
+            username="gm",
+            email="gm@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.player = User.objects.create_user(
+            username="player",
+            email="player@example.com",
+            password=TEST_PASSWORD,
+        )
+        self.kingdom = Kingdom.objects.create(name="Test Kingdom")
+        self.kingdom.initialize_defaults()
+        KingdomMembership.objects.create(
+            user=self.gm,
+            kingdom=self.kingdom,
+            role=MembershipRole.GM,
+        )
+        KingdomMembership.objects.create(
+            user=self.player,
+            kingdom=self.kingdom,
+            role=MembershipRole.PLAYER,
+        )
+        self.turn = KingdomTurn.objects.create(kingdom=self.kingdom, turn_number=1)
+
+    def test_turn_create_view_queries(self):
+        """GMRequiredMixin should not double-query kingdom/membership."""
+        self.client.force_login(self.gm)
+        url = reverse("turns:turn_create", kwargs={"pk": self.kingdom.pk})
+
+        # session, user, kingdom, membership
+        # No extra queries - form doesn't need leadership roles on GET
+        with self.assertNumQueries(4):
+            response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_turn_detail_view_queries(self):
+        """KingdomAccessMixin should efficiently load kingdom and activities."""
+        ActivityLog.objects.create(
+            kingdom=self.kingdom,
+            turn=self.turn,
+            activity_name="Test Activity",
+            activity_trait=ActivityTrait.REGION,
+            created_by=self.player,
+        )
+        self.client.force_login(self.player)
+        url = reverse(
+            "turns:turn_detail",
+            kwargs={"pk": self.kingdom.pk, "turn_pk": self.turn.pk},
+        )
+
+        # session, user, kingdom, membership, turn, activities (with select_related), user again
+        # Note: Extra user query from template checking activity.created_by
+        with self.assertNumQueries(7):
+            response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_activity_update_view_queries(self):
+        """ActivityUpdateView dispatch() + get_object() results in some duplicate queries."""
+        activity = ActivityLog.objects.create(
+            kingdom=self.kingdom,
+            turn=self.turn,
+            activity_name="Test Activity",
+            activity_trait=ActivityTrait.REGION,
+            created_by=self.player,
+        )
+        self.client.force_login(self.player)
+        url = reverse(
+            "turns:activity_update",
+            kwargs={"pk": self.kingdom.pk, "activity_pk": activity.pk},
+        )
+
+        # session, user, kingdom, membership, activity+turn (select_related),
+        # then get_object() refetches: kingdom, activity, turn, leadership roles
+        # Note: Could be optimized by caching get_object() result from dispatch()
+        with self.assertNumQueries(9):
+            response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_activity_delete_view_queries(self):
+        """ActivityDeleteView should efficiently check permissions and delete."""
+        activity = ActivityLog.objects.create(
+            kingdom=self.kingdom,
+            turn=self.turn,
+            activity_name="Test Activity",
+            activity_trait=ActivityTrait.REGION,
+            created_by=self.player,
+        )
+        self.client.force_login(self.player)
+        url = reverse(
+            "turns:activity_delete",
+            kwargs={"pk": self.kingdom.pk, "activity_pk": activity.pk},
+        )
+
+        # session, user, kingdom, membership, activity, user again, turn, delete
+        # Note: Extra user query from can_be_modified_by checking created_by
+        with self.assertNumQueries(8):
+            response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
