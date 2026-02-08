@@ -160,11 +160,31 @@ class ActivityLog(models.Model):
             return self.roll_result + self.total_modifier
         return None
 
+    def _upgrade_degree(self, degree):
+        """Upgrade degree of success by one step (for natural 20)."""
+        upgrade_map = {
+            DegreeOfSuccess.CRITICAL_FAILURE: DegreeOfSuccess.FAILURE,
+            DegreeOfSuccess.FAILURE: DegreeOfSuccess.SUCCESS,
+            DegreeOfSuccess.SUCCESS: DegreeOfSuccess.CRITICAL_SUCCESS,
+        }
+        return upgrade_map.get(degree, degree)
+
+    def _downgrade_degree(self, degree):
+        """Downgrade degree of success by one step (for natural 1)."""
+        downgrade_map = {
+            DegreeOfSuccess.CRITICAL_SUCCESS: DegreeOfSuccess.SUCCESS,
+            DegreeOfSuccess.SUCCESS: DegreeOfSuccess.FAILURE,
+            DegreeOfSuccess.FAILURE: DegreeOfSuccess.CRITICAL_FAILURE,
+        }
+        return downgrade_map.get(degree, degree)
+
     def calculate_degree_of_success(self):
         if self.roll_result is None or self.total_modifier is None or self.dc is None:
             return ""
+
         total = self.total_result
-        # Start with standard determination
+
+        # Determine base degree from total vs DC
         if total >= self.dc + 10:
             degree = DegreeOfSuccess.CRITICAL_SUCCESS
         elif total >= self.dc:
@@ -173,20 +193,11 @@ class ActivityLog(models.Model):
             degree = DegreeOfSuccess.CRITICAL_FAILURE
         else:
             degree = DegreeOfSuccess.FAILURE
-        # Natural 20 upgrades by one step
+
+        # Apply natural 20/1 adjustments
         if self.roll_result == 20:
-            if degree == DegreeOfSuccess.FAILURE:
-                degree = DegreeOfSuccess.SUCCESS
-            elif degree == DegreeOfSuccess.SUCCESS:
-                degree = DegreeOfSuccess.CRITICAL_SUCCESS
-            elif degree == DegreeOfSuccess.CRITICAL_FAILURE:
-                degree = DegreeOfSuccess.FAILURE
-        # Natural 1 downgrades by one step
+            degree = self._upgrade_degree(degree)
         elif self.roll_result == 1:
-            if degree == DegreeOfSuccess.SUCCESS:
-                degree = DegreeOfSuccess.FAILURE
-            elif degree == DegreeOfSuccess.FAILURE:
-                degree = DegreeOfSuccess.CRITICAL_FAILURE
-            elif degree == DegreeOfSuccess.CRITICAL_SUCCESS:
-                degree = DegreeOfSuccess.SUCCESS
+            degree = self._downgrade_degree(degree)
+
         return degree
